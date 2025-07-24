@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "773005686152",
+    "project_id": "ecomagara",
+    "storage_bucket": "ecomagara.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:773005686152:android:4e203beedea757b620363d",
+        "android_client_info": {
+          "package_name": "com.example.ecomagara"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyASEqBU-pHvpD18Qe7-8tlqi0MQXX0TVTg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
