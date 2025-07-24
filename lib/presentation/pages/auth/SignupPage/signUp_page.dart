@@ -180,7 +180,7 @@ class SignUpScreen extends StatelessWidget {
                           password: signUpController.passwordController.text,
                         );
                         print('Sign up successful');
-                        Get.offAll(Introscreen());
+                        Get.offAll(IntroScreen());
                       } catch (e) {
                         Get.snackbar(
                           'Error',

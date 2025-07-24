@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:ecomagara/config/colors.dart';
 import 'package:ecomagara/main.dart';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
