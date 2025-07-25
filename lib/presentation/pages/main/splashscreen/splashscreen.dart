@@ -77,13 +77,16 @@ class _SplashscreenState extends State<Splashscreen> {
                 ),
                 const SizedBox(height: 5),
                 Obx(
-                  () => Text(
-                    splashcreenController.fact.value.content,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w500,
+                  () => Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Text(
+                      splashcreenController.fact.value.content,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ),

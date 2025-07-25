@@ -6,8 +6,8 @@ import 'package:ecomagara/presentation/pages/auth/SignupPage/signUp_controller.d
 import 'package:ecomagara/presentation/pages/auth/authController.dart';
 import 'package:ecomagara/presentation/pages/auth/authPage/auth_page.dart';
 import 'package:ecomagara/presentation/pages/auth/loginPage/login_controller.dart';
+import 'package:ecomagara/presentation/pages/main/home_page.dart/homepage.dart';
 import 'package:ecomagara/presentation/pages/main/splashscreen/splashcreen_controller.dart';
-import 'package:ecomagara/presentation/pages/main/splashscreen/splashscreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      home: Splashscreen(),
+      home: Homepage(),
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.lightGreen),
