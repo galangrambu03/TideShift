@@ -1,10 +1,13 @@
+import 'package:ecomagara/datasource/local/unique_fact.dart';
+import 'package:ecomagara/datasource/repositories/fact_impl.dart';
 import 'package:ecomagara/datasource/services/firebaseAuthServices.dart';
+import 'package:ecomagara/domain/repositories/fact_repository.dart';
 import 'package:ecomagara/presentation/pages/auth/SignupPage/signUp_controller.dart';
 import 'package:ecomagara/presentation/pages/auth/authController.dart';
 import 'package:ecomagara/presentation/pages/auth/authPage/auth_page.dart';
 import 'package:ecomagara/presentation/pages/auth/loginPage/login_controller.dart';
-import 'package:ecomagara/presentation/pages/main/introscreen.dart';
-import 'package:ecomagara/presentation/pages/main/splashscreen.dart';
+import 'package:ecomagara/presentation/pages/main/splashscreen/splashcreen_controller.dart';
+import 'package:ecomagara/presentation/pages/main/splashscreen/splashscreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -14,14 +17,26 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
-  // AUTENTICATION - Controllers initialization 
+  // AUTHENTICATION - controller registration
   Get.lazyPut(() => FirebaseAuthService(), fenix: true);
   Get.lazyPut(() => AuthController(), fenix: true);
-  Get.lazyPut(() => LoginController() , fenix: true);
+  Get.lazyPut(() => LoginController(), fenix: true);
   Get.lazyPut(() => SignUpController(), fenix: true);
+
+  // SPLASHSCREEN
+  Get.lazyPut(() => SplashcreenController(), fenix: true);
+
+  // FACT FEATURE
+  Get.lazyPut<FactRepository>(
+    () => FactImpl(
+      datasource: UniqueFactLocalDatasource(),
+    ),
+    fenix: true,
+  );
 
   runApp(const MyApp());
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

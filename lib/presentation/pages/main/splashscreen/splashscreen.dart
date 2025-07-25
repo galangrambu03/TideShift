@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:ecomagara/config/colors.dart';
 import 'package:ecomagara/main.dart';
+import 'package:ecomagara/presentation/pages/main/splashscreen/splashcreen_controller.dart';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -16,11 +17,17 @@ class Splashscreen extends StatefulWidget {
 }
 
 class _SplashscreenState extends State<Splashscreen> {
+  final SplashcreenController splashcreenController = Get.find<SplashcreenController>();
+
   @override
   void initState() {
     super.initState();
     Timer(const Duration(seconds: 5), () {
-      Get.off(Main(), transition: Transition.fadeIn, duration: const Duration(milliseconds: 500));
+      Get.off(
+        Main(),
+        transition: Transition.fadeIn,
+        duration: const Duration(milliseconds: 500),
+      );
     });
   }
 
@@ -69,13 +76,15 @@ class _SplashscreenState extends State<Splashscreen> {
                   scale: 17,
                 ),
                 const SizedBox(height: 5),
-                Text(
-                  'Unique fact about climate change in the world',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w500,
+                Obx(
+                  () => Text(
+                    splashcreenController.fact.value.content,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
               ],
