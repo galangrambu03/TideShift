@@ -27,7 +27,7 @@ class GoalCard extends StatelessWidget {
       ),
       child: Text(
         text,
-        style: TextStyle(fontSize: 13, color: textColor),
+        style: TextStyle(fontSize: 13, color: textColor, fontWeight: FontWeight.w500),
       ),
     );
   }

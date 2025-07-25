@@ -1,5 +1,6 @@
 import 'package:ecomagara/config/colors.dart';
 import 'package:ecomagara/main.dart';
+import 'package:ecomagara/presentation/pages/main/home_page.dart/calendar_widget.dart';
 import 'package:ecomagara/presentation/widgets/defaultButton.dart';
 import 'package:ecomagara/presentation/widgets/goalCard.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +17,7 @@ class Homepage extends StatelessWidget {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.only(left: 16, right: 16, top: 30),
+              padding: const EdgeInsets.only(left: 16, right: 16, top: 50),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -79,6 +80,7 @@ class Homepage extends StatelessWidget {
                     children: [
                       Icon(Icons.auto_awesome, color: AppColors.primary),
                       SizedBox(width: 8),
+                      // TODO: Implement dynamic title based on day (Today goals/ Tomorrow goals)
                       Text(
                         'Today Goals',
                         style: TextStyle(
@@ -92,9 +94,9 @@ class Homepage extends StatelessWidget {
                 ],
               ),
             ),
+            SizedBox(height: 10),
             // Goals Cards
             // TODO: Implement dynamic goals by AI
-            SizedBox(height: 10),
             SizedBox(
               height: 70,
               child: ListView(
@@ -103,29 +105,40 @@ class Homepage extends StatelessWidget {
                   GoalCard(
                     text: 'Traveling by bicycle, walk or public transportation',
                     color: AppColors.surface,
+                    // ignore: deprecated_member_use
                     textColor: Colors.black.withOpacity(0.8),
                   ),
                   GoalCard(
                     text: 'Limit your showers time to 30 minutes today',
                     color: AppColors.surface,
+                    // ignore: deprecated_member_use
+                    textColor: Colors.black.withOpacity(0.8),
+                  ),
+                  GoalCard(
+                    text: 'Limit your car travel to 10 km today',
+                    color: AppColors.surface,
+                    // ignore: deprecated_member_use
                     textColor: Colors.black.withOpacity(0.8),
                   ),
                 ],
               ),
             ),
+            const SizedBox(height: 24),
+            KalenderBergambar()
           ],
         ),
       ),
     );
   }
 
+  // Widget if user not recap carbon yet
   Widget notRecapContainer() {
     return // Box recap carbon
     Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         gradient: AppColors.primaryGradient,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -155,7 +168,7 @@ class Homepage extends StatelessWidget {
                         height: 35,
                         width: 130,
                         child: defaultButton(
-                          text: 'Login',
+                          text: 'Recap Carbon',
                           onPressed: () {
                             // Navigate to login page
                             Get.to(Main());
@@ -173,4 +186,7 @@ class Homepage extends StatelessWidget {
       ),
     );
   }
+
+  // TODO: Build widget if user already recap carbon
 }
+
