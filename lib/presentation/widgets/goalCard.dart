@@ -1,3 +1,4 @@
+import 'package:ecomagara/config/colors.dart';
 import 'package:flutter/material.dart';
 
 class GoalCard extends StatelessWidget {
@@ -5,6 +6,8 @@ class GoalCard extends StatelessWidget {
   final Color? textColor;
   final Color? color;
   final Gradient? gradient;
+  final bool? showCarbonSaved;
+  final String? carbonSaved;
 
   const GoalCard({
     super.key,
@@ -12,6 +15,8 @@ class GoalCard extends StatelessWidget {
     this.textColor,
     this.color,
     this.gradient,
+    this.showCarbonSaved = false,
+    this.carbonSaved,
   });
 
   @override
@@ -25,10 +30,39 @@ class GoalCard extends StatelessWidget {
         gradient: gradient,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Text(
-        text,
-        style: TextStyle(fontSize: 13, color: textColor, fontWeight: FontWeight.w500),
-      ),
+      child:
+          (showCarbonSaved ?? false)
+              ? Column(
+                children: [
+                  Text(
+                    text,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: textColor,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Icon(Icons.eco, color: AppColors.navbarIcon, size: 15,),
+                      SizedBox(width: 5),
+                      Text(
+                        "Save $carbonSaved kgCO2",
+                        style: TextStyle(color: AppColors.navbarIcon, fontSize: 13),
+                      ),
+                    ],
+                  ),
+                ],
+              )
+              : Text(
+                text,
+                style: TextStyle(
+                  fontSize: 13,
+                  color: textColor,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
     );
   }
 }

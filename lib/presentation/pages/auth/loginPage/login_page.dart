@@ -1,7 +1,7 @@
 import 'package:ecomagara/config/colors.dart';
 import 'package:ecomagara/presentation/pages/auth/authController.dart';
 import 'package:ecomagara/presentation/pages/auth/loginPage/login_controller.dart';
-import 'package:ecomagara/presentation/pages/main/offHomepage.dart/homepageOffline.dart';
+import 'package:ecomagara/presentation/pages/main/offlineHome/homepageOffline.dart';
 import 'package:ecomagara/presentation/widgets/defaultButton.dart';
 import 'package:ecomagara/presentation/widgets/myTextfield.dart';
 import 'package:flutter/material.dart';

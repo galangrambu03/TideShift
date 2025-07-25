@@ -1,10 +1,12 @@
 import 'package:ecomagara/config/colors.dart';
-import 'package:ecomagara/main.dart';
-import 'package:ecomagara/presentation/pages/main/home_page.dart/calendar_widget.dart';
+import 'package:ecomagara/presentation/pages/main/mainHome/calendar_widget.dart';
+import 'package:ecomagara/presentation/pages/main/pointShop/shop_page.dart';
+import 'package:ecomagara/presentation/pages/main/profile/profile_page.dart';
 import 'package:ecomagara/presentation/widgets/defaultButton.dart';
 import 'package:ecomagara/presentation/widgets/goalCard.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
 class Homepage extends StatelessWidget {
   const Homepage({super.key});
@@ -17,7 +19,7 @@ class Homepage extends StatelessWidget {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.only(left: 16, right: 16, top: 50),
+              padding: const EdgeInsets.only(left: 16, right: 16, top: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -49,20 +51,32 @@ class Homepage extends StatelessWidget {
                       ),
                       Row(
                         children: [
-                          const Icon(Icons.star, color: Colors.amber),
-                          const SizedBox(width: 4),
-                          const Text(
-                            '290',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                          GestureDetector(
+                            child: Row(
+                              children: [
+                                const Icon(Icons.star, color: Colors.amber),
+                                const SizedBox(width: 4),
+                                const Text(
+                                  '290',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                            onTap: () {
+                              Get.to(ShopPage());
+                            },
                           ),
                           const SizedBox(width: 12),
-                          CircleAvatar(
-                            radius: 16,
-                            backgroundColor: Colors.black,
-                            child: const Icon(
-                              Icons.person,
-                              color: Colors.white,
+                          // TODO: Implement user profile picture
+                          GestureDetector(
+                            child: Icon(
+                              Icons.account_circle,
+                              size: 40,
+                              color: AppColors.primary,
                             ),
+                            onTap: () {
+                              Get.to(ProfilePage());
+                            },
                           ),
                         ],
                       ),
@@ -98,24 +112,30 @@ class Homepage extends StatelessWidget {
             // Goals Cards
             // TODO: Implement dynamic goals by AI
             SizedBox(
-              height: 70,
+              height: 80,
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 children: [
                   GoalCard(
                     text: 'Traveling by bicycle, walk or public transportation',
+                    showCarbonSaved: true,
+                    carbonSaved: '4',
                     color: AppColors.surface,
                     // ignore: deprecated_member_use
                     textColor: Colors.black.withOpacity(0.8),
                   ),
                   GoalCard(
                     text: 'Limit your showers time to 30 minutes today',
+                    showCarbonSaved: true,
+                    carbonSaved: '0.7',
                     color: AppColors.surface,
                     // ignore: deprecated_member_use
                     textColor: Colors.black.withOpacity(0.8),
                   ),
                   GoalCard(
                     text: 'Limit your car travel to 10 km today',
+                    showCarbonSaved: true,
+                    carbonSaved: '5',
                     color: AppColors.surface,
                     // ignore: deprecated_member_use
                     textColor: Colors.black.withOpacity(0.8),
@@ -124,7 +144,7 @@ class Homepage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-            KalenderBergambar()
+            KalenderBergambar(),
           ],
         ),
       ),
@@ -146,7 +166,7 @@ class Homepage extends StatelessWidget {
           Row(
             children: [
               Image.asset(
-                'assets/images/decorationImages/mascotHappy.png',
+                'assets/images/decorationImages/mascotSad.png',
                 height: 90,
               ),
               const SizedBox(width: 12),
@@ -170,8 +190,7 @@ class Homepage extends StatelessWidget {
                         child: defaultButton(
                           text: 'Recap Carbon',
                           onPressed: () {
-                            // Navigate to login page
-                            Get.to(Main());
+                            // TODO: Navigate to recap carbon page
                           },
                           color: AppColors.button2,
                         ),
@@ -189,4 +208,3 @@ class Homepage extends StatelessWidget {
 
   // TODO: Build widget if user already recap carbon
 }
-

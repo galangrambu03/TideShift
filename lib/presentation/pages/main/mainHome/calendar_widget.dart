@@ -19,7 +19,7 @@ class KalenderBergambar extends StatelessWidget {
             controller.currentPageIndex.value,
           );
           return Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               IconButton(
                 icon: const Icon(
