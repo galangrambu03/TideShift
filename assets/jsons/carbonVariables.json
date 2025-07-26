@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "variableName": "How many kilometers did you travel by car today? (km)",
+    "carbonWeight": 0.21
+  },
+  {
+    "id": 2,
+    "variableName": "Did you eat food packaged in plastic or vinyl?",
+    "carbonWeight": 0.5
+  },
+  {
+    "id": 3,
+    "variableName": "How many minutes did you spend showering today? (minutes)",
+    "carbonWeight": 0.5
+  },
+  {
+    "id": 4,
+    "variableName": "How many hours did you spend using electronic devices today? (hours)",
+    "carbonWeight": 0.06
+  },
+  {
+    "id": 5,
+    "variableName": "Did you do any online shopping (including deliveries) today?",
+    "carbonWeight": 1.0
+  },
+  {
+    "id": 6,
+    "variableName": "Did you have any food waste today?",
+    "carbonWeight": 0.9
+  },
+  {
+    "id": 7,
+    "variableName": "Did you use air conditioning or heating today?",
+    "carbonWeight": 1.5
+  },
+  {
+    "id": 8,
+    "variableName": "Did you choose to walk, bike, or use public transportation instead of driving?",
+    "carbonWeight": -1.0
+  },
+  {
+    "id": 9,
+    "variableName": "Did you eat mostly vegetables or plant-based meals instead of meat?",
+    "carbonWeight": -2.0
+  },
+  {
+    "id": 10,
+    "variableName": "Did you use a tumbler or reusable container instead of a disposable one?",
+    "carbonWeight": -0.2
+  },
+  {
+    "id": 11,
+    "variableName": "Did you turn off unused lights, or unplug devices you weren't using?",
+    "carbonWeight": -0.3
+  },
+  {
+    "id": 12,
+    "variableName": "Did you properly separate and recycle your waste?",
+    "carbonWeight": -0.7
+  }
+]

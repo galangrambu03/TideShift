@@ -55,7 +55,7 @@ class KalenderBergambar extends StatelessWidget {
 
         // Calendar section
         SizedBox(
-          height: 356,
+          height: 360,
           child: PageView.builder(
             reverse: true,
             controller: controller.pageController,
@@ -187,5 +187,27 @@ class KalenderBergambar extends StatelessWidget {
 
       return child;
     });
+  }
+  
+  // Show the the history detail (Total carbon, carbon per category, Island type)
+  void showDetailHistory() {
+    TextEditingController emailController = TextEditingController();
+    Get.dialog(
+      Dialog(
+        backgroundColor: AppColors.background, // warna latar belakang popup
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: SizedBox(
+            width: 300,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

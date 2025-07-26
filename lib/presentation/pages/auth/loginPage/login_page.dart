@@ -189,7 +189,7 @@ class LoginScreen extends StatelessWidget {
     TextEditingController emailController = TextEditingController();
     Get.dialog(
       Dialog(
-        backgroundColor: const Color(0xFFEAF5F1), // warna latar belakang popup
+        backgroundColor: AppColors.background, 
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: Padding(
           padding: const EdgeInsets.all(24.0),

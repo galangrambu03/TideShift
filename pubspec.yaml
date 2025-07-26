@@ -36,7 +36,7 @@ dependencies:
   awesome_snackbar_content: ^0.1.6
   video_player: ^2.10.0
 
-  flutter_local_notifications: ^19.3.1
+  # flutter_local_notifications: ^19.3.1
   cached_network_image: ^3.4.1
   # API 
   http: ^1.4.0

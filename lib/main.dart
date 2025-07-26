@@ -7,6 +7,7 @@ import 'package:ecomagara/presentation/pages/auth/SignupPage/signUp_controller.d
 import 'package:ecomagara/presentation/pages/auth/authController.dart';
 import 'package:ecomagara/presentation/pages/auth/authPage/auth_page.dart';
 import 'package:ecomagara/presentation/pages/auth/loginPage/login_controller.dart';
+import 'package:ecomagara/presentation/pages/main/mainChecklist/checklist_controller.dart';
 import 'package:ecomagara/presentation/pages/main/mainChecklist/checklist_page.dart';
 import 'package:ecomagara/presentation/pages/main/mainDisaster/disaster_page.dart';
 import 'package:ecomagara/presentation/pages/main/mainDiy/diy_page.dart';
@@ -43,6 +44,10 @@ Future<void> main() async {
   // CALENDAR FEATURE
   Get.lazyPut(() => CalendarController(), fenix: true);
 
+  // MAIN PAGE
+  Get.put(NavigationController(), permanent: true);
+  Get.lazyPut(() => ChecklistController(), fenix: true);
+
   runApp(const MyApp());
 }
 
@@ -61,14 +66,15 @@ class MyApp extends StatelessWidget {
   }
 }
 
+// MAIN SCREEN
+// : Screen that show either main navigation page or auth page
 class Main extends StatelessWidget {
   const Main({super.key});
 
   @override
   Widget build(BuildContext context) {
     final user = Get.find<AuthController>();
-    // Menggunakan Obx untuk mendeteksi perubahan pada user
-    // Jika user sudah login, tampilkan MainPage, jika belum tampilkan AuthPage
+    // if user already logged in show main page else show auth page
     return Obx(() {
       if (user.user.value != null) {
         return MainPage();
@@ -79,8 +85,19 @@ class Main extends StatelessWidget {
   }
 }
 
+// MAIN NAVIGATION PAGE
+// Controller
+class NavigationController extends GetxController {
+  var indexHalaman = 0.obs;
+
+  void ubahHalaman(int index) {
+    indexHalaman.value = index;
+  }
+}
+
+// View
 class MainPage extends StatelessWidget {
-  final RxInt indexHalaman = 0.obs;
+  final NavigationController navC = Get.find<NavigationController>();
 
   // Available pages in the main navigation
   final List<Widget> halaman = [
@@ -97,15 +114,13 @@ class MainPage extends StatelessWidget {
       () => SafeArea(
         child: Scaffold(
           backgroundColor: AppColors.background,
-          body: halaman[indexHalaman.value],
+          body: halaman[navC.indexHalaman.value],
           bottomNavigationBar: Material(
             elevation: 10,
             child: GNav(
-              selectedIndex:
-                  indexHalaman.value, 
+              selectedIndex: navC.indexHalaman.value,
               onTabChange: (index) {
-                indexHalaman.value =
-                    index; 
+                navC.indexHalaman.value = index;
               },
               backgroundColor: AppColors.surface,
               gap: 5,
