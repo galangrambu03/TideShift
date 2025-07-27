@@ -5,11 +5,13 @@ import 'package:ecomagara/presentation/pages/main/pointShop/shop_page.dart';
 import 'package:ecomagara/presentation/pages/main/profile/profile_page.dart';
 import 'package:ecomagara/presentation/widgets/defaultButton.dart';
 import 'package:ecomagara/presentation/widgets/goalCard.dart';
+import 'package:ecomagara/user_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class Homepage extends StatelessWidget {
-  const Homepage({super.key});
+  final UserController userController = Get.find<UserController>();
+  Homepage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,19 +29,22 @@ class Homepage extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Column(
+                      Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             'Hello',
                             style: TextStyle(fontSize: 20, color: Colors.black),
                           ),
-                          Text(
-                            'Username',
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.primary,
+                          Obx(
+                            () => Text(
+                              userController.userData.value?.username ??
+                                  'Loading...',
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.primary,
+                              ),
                             ),
                           ),
                           SizedBox(height: 4),
@@ -56,9 +61,15 @@ class Homepage extends StatelessWidget {
                               children: [
                                 const Icon(Icons.star, color: Colors.amber),
                                 const SizedBox(width: 4),
-                                const Text(
-                                  '290',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                Obx(
+                                  () => Text(
+                                    userController.userData.value?.points
+                                            .toString() ??
+                                        '---',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),
@@ -67,15 +78,17 @@ class Homepage extends StatelessWidget {
                             },
                           ),
                           const SizedBox(width: 12),
-                          GestureDetector(
-                            child: Icon(
-                              Icons.account_circle,
-                              size: 40,
-                              color: AppColors.primary,
+                          Obx(
+                            () => GestureDetector(
+                              child: CircleAvatar(
+                                backgroundImage: AssetImage(
+                                  'assets/images/profilePictures/${userController.userData.value!.profilePicture}',
+                                ),
+                              ),
+                              onTap: () {
+                                Get.to(ProfilePage());
+                              },
                             ),
-                            onTap: () {
-                              Get.to(ProfilePage());
-                            },
                           ),
                         ],
                       ),

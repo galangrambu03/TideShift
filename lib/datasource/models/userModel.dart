@@ -1,32 +1,31 @@
 class UserModel {
-  final String username;
   final String email;
-  final String profilePictureUrl;
-  final String createdAt;
+  final String username;
+  final String profilePicture;
+  final DateTime joinDate;
+  final int points;
+  final int currentIslandTheme;
+  final String firebaseUid;
 
   UserModel({
-    required this.username,
     required this.email,
-    required this.profilePictureUrl,
-    required this.createdAt,
+    required this.username,
+    required this.profilePicture,
+    required this.joinDate,
+    required this.points,
+    required this.currentIslandTheme,
+    required this.firebaseUid,
   });
 
-  // 
-  factory UserModel.fromMap(Map<String, dynamic> map) {
-  return UserModel(
-    username: map['username'] ?? 'No Username',
-    email: map['email'] ?? 'No Email',
-    profilePictureUrl: map['profilePicture'] ?? 'assets/profile.jpeg', 
-    createdAt: map['createdAt'] ?? 'No date',
-  );
-}
-
-  // Map<String, dynamic> toMap() {
-  //   return {
-  //     'username': username,
-  //     'email': email,
-  //     'profilePictureUrl': profilePictureUrl,
-  //     'createdAt': createdAt,
-  //   };
-  // }
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
+      email: json['email'],
+      username: json['username'],
+      profilePicture: json['profilePicture'] ?? 'default.png',
+      joinDate: DateTime.parse(json['joinDate']),
+      points: json['points'] ?? 0,
+      currentIslandTheme: json['currentIslandTheme'] ?? 0,
+      firebaseUid: json['firebase_uid'],
+    );
+  }
 }

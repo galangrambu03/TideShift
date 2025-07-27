@@ -1,9 +1,13 @@
 import 'package:ecomagara/datasource/services/firebaseAuthServices.dart';
+import 'package:ecomagara/domain/repositories/user_repostitory.dart';
+import 'package:ecomagara/user_controller.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthController extends GetxController {
   final firebaseAuthService = Get.find<FirebaseAuthService>();
+  final userController = Get.find<UserController>();
+  final userRepository = Get.find<UserRepository>();
 
   // active user from Firebase auth
   var user = Rxn<User>();
@@ -16,17 +20,29 @@ class AuthController extends GetxController {
     super.onInit();
     user.value = FirebaseAuth.instance.currentUser;
   }
-  
 
   /// helper: did user already logged in?
   bool get isLoggedIn => user.value != null;
 
   // sign up
-  Future<void> signUp({required String email, required String password}) async {
+  // SIGN UP
+  Future<void> signUp({
+    required String email,
+    required String password,
+    required String username,
+    required String profilePicture,
+  }) async {
     try {
       isLoading.value = true;
-      firebaseAuthService.signUp(email, password);
-      isLoading.value = false;
+
+      // 1. Sign up to Firebase Auth
+      await firebaseAuthService.signUp(email, password);
+      user.value = FirebaseAuth.instance.currentUser;
+
+      // 2. Sync user to backend (username & profilePicture from frontend)
+      await userController.syncUserData(username, profilePicture);
+      await userController.fetchUserProfile();
+      // await
     } catch (e) {
       rethrow;
     } finally {
@@ -39,6 +55,7 @@ class AuthController extends GetxController {
     try {
       isLoading.value = true;
       await firebaseAuthService.login(email, password);
+      await userController.fetchUserProfile();
       user.value = FirebaseAuth.instance.currentUser;
     } catch (e) {
       rethrow;
@@ -51,6 +68,7 @@ class AuthController extends GetxController {
   Future<void> signOut() async {
     await firebaseAuthService.logout();
     user.value = null;
+    userController.userData.value = null;
   }
 
   // Reset password

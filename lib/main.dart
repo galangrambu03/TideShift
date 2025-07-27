@@ -1,8 +1,11 @@
 import 'package:ecomagara/config/colors.dart';
 import 'package:ecomagara/datasource/local/unique_fact.dart';
+import 'package:ecomagara/datasource/remote/user_remote.dart';
 import 'package:ecomagara/datasource/repositories/fact_impl.dart';
+import 'package:ecomagara/datasource/repositories/user_impl.dart';
 import 'package:ecomagara/datasource/services/firebaseAuthServices.dart';
 import 'package:ecomagara/domain/repositories/fact_repository.dart';
+import 'package:ecomagara/domain/repositories/user_repostitory.dart';
 import 'package:ecomagara/presentation/pages/auth/SignupPage/signUp_controller.dart';
 import 'package:ecomagara/presentation/pages/auth/authController.dart';
 import 'package:ecomagara/presentation/pages/auth/authPage/auth_page.dart';
@@ -16,6 +19,7 @@ import 'package:ecomagara/presentation/pages/main/mainHome/homepage.dart';
 import 'package:ecomagara/presentation/pages/main/mainleaderboard/leaderboard_page.dart';
 import 'package:ecomagara/presentation/pages/main/splashscreen/splashcreen_controller.dart';
 import 'package:ecomagara/presentation/pages/main/splashscreen/splashscreen.dart';
+import 'package:ecomagara/user_controller.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -26,27 +30,26 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
-  // AUTHENTICATION - controller registration
+  // CONTROLLERS
   Get.lazyPut(() => FirebaseAuthService(), fenix: true);
   Get.lazyPut(() => AuthController(), fenix: true);
   Get.lazyPut(() => LoginController(), fenix: true);
   Get.lazyPut(() => SignUpController(), fenix: true);
-
-  // SPLASHSCREEN
+  Get.lazyPut(() => UserController(), fenix: true);
   Get.lazyPut(() => SplashcreenController(), fenix: true);
+  Get.lazyPut(() => CalendarController(), fenix: true);
+  Get.put(NavigationController(), permanent: true);
+  Get.lazyPut(() => ChecklistController(), fenix: true);
 
-  // FACT FEATURE
+  // REPOSITORIES
   Get.lazyPut<FactRepository>(
     () => FactImpl(datasource: UniqueFactLocalDatasource()),
     fenix: true,
   );
-
-  // CALENDAR FEATURE
-  Get.lazyPut(() => CalendarController(), fenix: true);
-
-  // MAIN PAGE
-  Get.put(NavigationController(), permanent: true);
-  Get.lazyPut(() => ChecklistController(), fenix: true);
+  Get.lazyPut<UserRepository>(
+    () => UserRepositoryImpl(datasource: UserDatasource()),
+    fenix: true,
+  );
 
   runApp(const MyApp());
 }

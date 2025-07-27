@@ -178,6 +178,8 @@ class SignUpScreen extends StatelessWidget {
                         await authController.signUp(
                           email: signUpController.emailController.text,
                           password: signUpController.passwordController.text,
+                          username: signUpController.usernameController.text,
+                          profilePicture: 'default.png'
                         );
                         print('Sign up successful');
                         Get.offAll(IntroScreen());

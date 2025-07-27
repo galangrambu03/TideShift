@@ -1,4 +1,3 @@
-import 'package:get/get_rx/src/rx_types/rx_types.dart';
 
 enum ChecklistType { boolean, numericInt, numericDouble }
 
