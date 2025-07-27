@@ -45,7 +45,7 @@ app.*.map.json
 /android/app/release
 
 # Service account from firebase
-service_account.json
+backend/service_account.json
 
 # Allow another json
 !*.json
