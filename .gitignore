@@ -47,5 +47,4 @@ app.*.map.json
 # Service account from firebase
 backend/service_account.json
 
-# Allow another json
-!*.json
+
