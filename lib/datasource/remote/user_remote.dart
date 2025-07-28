@@ -6,7 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 class UserDatasource {
   // Ganti dengan IP lokal Flask kamu saat testing di device
-  final String baseUrl = 'http://192.168.0.101:5000';
+  final String baseUrl = 'http://192.168.1.25:5000';
 
   /// Get Firebase ID token
   Future<String> _getIdToken() async {

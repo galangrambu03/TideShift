@@ -9,23 +9,18 @@ class AuthController extends GetxController {
   final userController = Get.find<UserController>();
   final userRepository = Get.find<UserRepository>();
 
-  // active user from Firebase auth
   var user = Rxn<User>();
-  // loading state for async operations
   RxBool isLoading = false.obs;
+  RxBool isSync = false.obs;
 
-  // get user data when the controller is initialized
   @override
   void onInit() {
     super.onInit();
     user.value = FirebaseAuth.instance.currentUser;
   }
 
-  /// helper: did user already logged in?
   bool get isLoggedIn => user.value != null;
 
-  // sign up
-  // SIGN UP
   Future<void> signUp({
     required String email,
     required String password,
@@ -34,21 +29,27 @@ class AuthController extends GetxController {
   }) async {
     try {
       isLoading.value = true;
+      isSync.value = false;
 
-      // 1. Sign up to Firebase Auth
+      // 1. Sign up ke Firebase
       await firebaseAuthService.signUp(email, password);
+
+      // 2. Simpan data ke backend
+      await userController.syncUserData(username, profilePicture);
+
+      // 3. Set user hanya setelah backend siap
       user.value = FirebaseAuth.instance.currentUser;
 
-      // 2. Sync user to backend (username & profilePicture from frontend)
-      await userController.syncUserData(username, profilePicture);
+      // 4. Ambil profile backend kalau perlu
       await userController.fetchUserProfile();
-      // await
     } catch (e) {
       rethrow;
     } finally {
       isLoading.value = false;
+      isSync.value = true;
     }
   }
+
 
   // login
   Future<void> login({required String email, required String password}) async {

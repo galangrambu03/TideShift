@@ -33,8 +33,8 @@ Future<void> main() async {
   // CONTROLLERS
   Get.lazyPut(() => FirebaseAuthService(), fenix: true);
   Get.lazyPut(() => AuthController(), fenix: true);
-  Get.lazyPut(() => LoginController(), fenix: true);
-  Get.lazyPut(() => SignUpController(), fenix: true);
+  Get.put(LoginController(), permanent: true);
+  Get.put(SignUpController(), permanent: true);
   Get.lazyPut(() => UserController(), fenix: true);
   Get.lazyPut(() => SplashcreenController(), fenix: true);
   Get.lazyPut(() => CalendarController(), fenix: true);

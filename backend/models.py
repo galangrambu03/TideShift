@@ -10,18 +10,18 @@ db = SQLAlchemy()
 class User(db.Model):
     __tablename__ = 'users'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     email = db.Column(db.String(255), nullable=False, unique=True)
     username = db.Column(db.String(255), nullable=True)
     profilePicture = db.Column(db.String(100), nullable=True)
-    joinDate = db.Column(db.DateTime, nullable=False)  # isi manual dari Firebase
+    joinDate = db.Column(db.DateTime, nullable=False)  
     points = db.Column(db.Integer, nullable=False, default=0)
     currentIslandTheme = db.Column(db.Integer, nullable=False, default=0)
     firebase_uid = db.Column(db.String(255), nullable=True, unique=True)
 
 class DailyCarbonLog(db.Model):
     __tablename__ = 'dailycarbonlogs'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     usersId = db.Column(db.Integer, db.ForeignKey('users.id'))
     totalCarbon = db.Column(db.Integer)
     carbonLevel = db.Column(db.Integer)

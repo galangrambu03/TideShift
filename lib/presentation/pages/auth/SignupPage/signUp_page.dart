@@ -10,7 +10,7 @@ import 'package:get/get_core/src/get_main.dart';
 
 class SignUpScreen extends StatelessWidget {
   final VoidCallback showLoginPage;
-  SignUpScreen({super.key, required this.showLoginPage});
+  const SignUpScreen({super.key, required this.showLoginPage});
 
   SignUpController get signUpController => Get.find<SignUpController>();
   AuthController get authController => Get.find<AuthController>();
