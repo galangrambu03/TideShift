@@ -79,7 +79,7 @@ class Main extends StatelessWidget {
     final user = Get.find<AuthController>();
     // if user already logged in show main page else show auth page
     return Obx(() {
-      if (user.user.value != null) {
+      if (user.user.value != null && user.isSync.value == true) {
         return MainPage();
       } else {
         return AuthPage();

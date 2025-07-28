@@ -68,7 +68,7 @@ class UserDatasource {
       Uri.parse('$baseUrl/leaderboard'),
       headers: {'Authorization': 'Bearer $idToken'},
     );
-
+    
     if (response.statusCode != 200) {
       throw Exception("Failed to fetch leaderboard: ${response.body}");
     }

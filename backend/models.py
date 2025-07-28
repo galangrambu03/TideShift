@@ -7,6 +7,7 @@ from sqlalchemy.sql import func
 
 db = SQLAlchemy()
 
+# USER  
 class User(db.Model):
     __tablename__ = 'users'
 
@@ -18,6 +19,7 @@ class User(db.Model):
     points = db.Column(db.Integer, nullable=False, default=0)
     currentIslandTheme = db.Column(db.Integer, nullable=False, default=0)
     firebase_uid = db.Column(db.String(255), nullable=True, unique=True)
+
 
 class DailyCarbonLog(db.Model):
     __tablename__ = 'dailycarbonlogs'

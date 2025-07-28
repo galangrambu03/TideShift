@@ -11,7 +11,7 @@ class AuthController extends GetxController {
 
   var user = Rxn<User>();
   RxBool isLoading = false.obs;
-  RxBool isSync = false.obs;
+  RxBool isSync = false.obs; // to check if user is synced with firebase or not
 
   @override
   void onInit() {
@@ -31,34 +31,39 @@ class AuthController extends GetxController {
       isLoading.value = true;
       isSync.value = false;
 
-      // 1. Sign up ke Firebase
+      // 1. Sign up to Firebase auth
       await firebaseAuthService.signUp(email, password);
 
-      // 2. Simpan data ke backend
+      // 2. Save user data to backend database
       await userController.syncUserData(username, profilePicture);
 
-      // 3. Set user hanya setelah backend siap
+      // 3. Set current user
       user.value = FirebaseAuth.instance.currentUser;
 
-      // 4. Ambil profile backend kalau perlu
+      // 4. Fetch user data after sign up
       await userController.fetchUserProfile();
+      isSync.value = true;
     } catch (e) {
+      isSync.value = false;
       rethrow;
     } finally {
       isLoading.value = false;
-      isSync.value = true;
     }
   }
-
 
   // login
   Future<void> login({required String email, required String password}) async {
     try {
       isLoading.value = true;
+      isSync.value = false;
+      // 1. Login to Firebase auth
       await firebaseAuthService.login(email, password);
+      // 2. Fetch user data after login
       await userController.fetchUserProfile();
       user.value = FirebaseAuth.instance.currentUser;
+      isSync.value = true;
     } catch (e) {
+      isSync.value = false;
       rethrow;
     } finally {
       isLoading.value = false;
@@ -70,6 +75,7 @@ class AuthController extends GetxController {
     await firebaseAuthService.logout();
     user.value = null;
     userController.userData.value = null;
+    isSync.value = false;
   }
 
   // Reset password
