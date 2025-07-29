@@ -5,7 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'checklist_controller.dart';
 
-class ChecklistPage extends StatelessWidget {
+class ChecklistPage extends StatefulWidget {
+  @override
+  _ChecklistPageState createState() => _ChecklistPageState();
+}
+
+class _ChecklistPageState extends State<ChecklistPage> {
   final controller = Get.put(ChecklistController());
 
   @override
@@ -24,69 +29,108 @@ class ChecklistPage extends StatelessWidget {
         centerTitle: true,
       ),
       backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ...controller.carbonVariables.map((item) {
-                switch (item.type) {
-                  case ChecklistType.boolean:
-                    return checklistItem(
-                      item.label,
-                      item.value as RxBool,
-                      item.iconName ?? '',
-                    );
-                  case ChecklistType.numericInt:
-                  case ChecklistType.numericDouble:
-                    return numericInput(
-                      item.label,
-                      item.value,
-                      item.iconName ?? '',
-                    );
-                }
-              }).toList(),
-
-              SizedBox(height: 16),
-
-              Row(
-                children: [
-                  Expanded(
-                    child: defaultButton(
-                      text: 'Save',
-                      gradient: AppColors.buttonGradient,
-                      onPressed: controller.saveChecklist,
-                    ),
-                  ),
-                  SizedBox(width: 12),
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: controller.reset,
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.green),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        padding: EdgeInsets.symmetric(vertical: 14),
-                      ),
-                      child: Text(
-                        "Reset",
-                        style: TextStyle(color: Colors.green),
-                      ),
-                    ),
-                  ),
-                ],
+      body: Obx(() {
+        // Jika sudah submit hari ini
+        if (controller.isTodaySubmited.value) {
+          return Center(
+            child: Text(
+              'Ini halaman recap',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppColors.primary,
               ),
-              SizedBox(height: 32),
-            ],
+              textAlign: TextAlign.center,
+            ),
+          );
+        }
+
+        // Jika belum submit hari ini
+        return SafeArea(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ...controller.carbonVariables.map((item) {
+                  switch (item.type) {
+                    case ChecklistType.boolean:
+                      return checklistItem(
+                        item.label,
+                        item.value as RxBool,
+                        item.iconName ?? '',
+                      );
+                    case ChecklistType.numericInt:
+                    case ChecklistType.numericDouble:
+                      return numericInput(
+                        item.label,
+                        item.value,
+                        item.iconName ?? '',
+                      );
+                  }
+                }).toList(),
+
+                SizedBox(height: 16),
+
+                Row(
+                  children: [
+                    Expanded(
+                      child: defaultButton(
+                        text: 'Save',
+                        gradient: AppColors.buttonGradient,
+                        onPressed: () async {
+                          try {
+                            await controller.saveChecklist(
+                              controller.carbonVariables[9].value.value as double,
+                              (controller.carbonVariables[0].value.value ? 1 : 0),
+                              controller.carbonVariables[10].value.value as int,
+                              controller.carbonVariables[11].value.value as int,
+                              (controller.carbonVariables[1].value.value ? 1 : 0),
+                              (controller.carbonVariables[2].value.value ? 1 : 0),
+                              (controller.carbonVariables[3].value.value ? 1 : 0),
+                              (controller.carbonVariables[4].value.value ? 1 : 0),
+                              (controller.carbonVariables[5].value.value ? 1 : 0),
+                              (controller.carbonVariables[6].value.value ? 1 : 0),
+                              (controller.carbonVariables[7].value.value ? 1 : 0),
+                              (controller.carbonVariables[8].value.value ? 1 : 0),
+                            );
+                          } catch (e) {
+                            Get.snackbar(
+                              'Error',
+                              'Failed to recap, try check your internet connection',
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: controller.reset,
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(color: Colors.green),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          padding: EdgeInsets.symmetric(vertical: 14),
+                        ),
+                        child: Text(
+                          "Reset",
+                          style: TextStyle(color: Colors.green),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 32),
+              ],
+            ),
           ),
-        ),
-      ),
+        );
+      }),
     );
   }
 
-  // checklist tile for true/false input
   Widget checklistItem(String label, RxBool value, String iconName) {
     return Obx(
       () => Container(
@@ -113,7 +157,6 @@ class ChecklistPage extends StatelessWidget {
     );
   }
 
-  // checklist tile for numeric input
   Widget numericInput(String label, Rx value, String iconName) {
     return Obx(
       () => Container(
@@ -133,7 +176,6 @@ class ChecklistPage extends StatelessWidget {
               child: TextFormField(
                 initialValue: value.value.toString(),
                 onChanged: (val) {
-                  // addjust the numeric input type according to the variable data type
                   if (value is RxDouble) {
                     value.value = double.tryParse(val) ?? 0.0;
                   } else if (value is RxInt) {
@@ -163,7 +205,6 @@ class ChecklistPage extends StatelessWidget {
     );
   }
 
-  // return the flutter icon corresponding to the icon name string from the variable
   IconData getIconByName(String? name) {
     switch (name) {
       case 'emoji_food_beverage':

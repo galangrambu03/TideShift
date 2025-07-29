@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
@@ -27,6 +28,7 @@ class DailyCarbonLog(db.Model):
     usersId = db.Column(db.Integer, db.ForeignKey('users.id'))
     totalCarbon = db.Column(db.Integer)
     carbonLevel = db.Column(db.Integer)
+    IslandPath = db.Column(db.Integer)
     carbonSaved = db.Column(db.Integer)
     carTravelKm = db.Column(db.Integer)
     packagedFood = db.Column(db.Boolean)
@@ -40,3 +42,4 @@ class DailyCarbonLog(db.Model):
     useTumbler = db.Column(db.Boolean)
     saveEnergy = db.Column(db.Boolean)
     separateRecycleWaste = db.Column(db.Boolean)
+    logDate = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc)) 

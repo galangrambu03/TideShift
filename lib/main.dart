@@ -1,9 +1,13 @@
 import 'package:ecomagara/config/colors.dart';
+import 'package:ecomagara/config/config.dart';
 import 'package:ecomagara/datasource/local/unique_fact.dart';
+import 'package:ecomagara/datasource/remote/dailyCarbonLog_remote.dart';
 import 'package:ecomagara/datasource/remote/user_remote.dart';
+import 'package:ecomagara/datasource/repositories/carbonLog_impl.dart';
 import 'package:ecomagara/datasource/repositories/fact_impl.dart';
 import 'package:ecomagara/datasource/repositories/user_impl.dart';
 import 'package:ecomagara/datasource/services/firebaseAuthServices.dart';
+import 'package:ecomagara/domain/repositories/dailyCarbonLog_repository.dart';
 import 'package:ecomagara/domain/repositories/fact_repository.dart';
 import 'package:ecomagara/domain/repositories/user_repostitory.dart';
 import 'package:ecomagara/presentation/pages/auth/SignupPage/signUp_controller.dart';
@@ -15,6 +19,7 @@ import 'package:ecomagara/presentation/pages/main/mainChecklist/checklist_page.d
 import 'package:ecomagara/presentation/pages/main/mainDisaster/disaster_page.dart';
 import 'package:ecomagara/presentation/pages/main/mainDiy/diy_page.dart';
 import 'package:ecomagara/presentation/pages/main/mainHome/calendar_controller.dart';
+import 'package:ecomagara/presentation/pages/main/mainHome/carbonLog_controller.dart';
 import 'package:ecomagara/presentation/pages/main/mainHome/homepage.dart';
 import 'package:ecomagara/presentation/pages/main/mainleaderboard/leaderboard_page.dart';
 import 'package:ecomagara/presentation/pages/main/splashscreen/splashcreen_controller.dart';
@@ -30,17 +35,6 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
-  // CONTROLLERS
-  Get.lazyPut(() => FirebaseAuthService(), fenix: true);
-  Get.lazyPut(() => AuthController(), fenix: true);
-  Get.put(LoginController(), permanent: true);
-  Get.put(SignUpController(), permanent: true);
-  Get.lazyPut(() => UserController(), fenix: true);
-  Get.lazyPut(() => SplashcreenController(), fenix: true);
-  Get.lazyPut(() => CalendarController(), fenix: true);
-  Get.put(NavigationController(), permanent: true);
-  Get.lazyPut(() => ChecklistController(), fenix: true);
-
   // REPOSITORIES
   Get.lazyPut<FactRepository>(
     () => FactImpl(datasource: UniqueFactLocalDatasource()),
@@ -50,7 +44,28 @@ Future<void> main() async {
     () => UserRepositoryImpl(datasource: UserDatasource()),
     fenix: true,
   );
+  Get.lazyPut<DailyCarbonLogRepository>(
+    () => DailyCarbonLogRepositoryImpl(
+      remoteDataSource: DailyCarbonLogRemoteDataSource(),
+    ),
+    fenix: true,
+  );
 
+  // CONTROLLERS
+  Get.lazyPut(() => FirebaseAuthService(), fenix: true);
+  Get.lazyPut(() => AuthController(), fenix: true);
+  Get.put(LoginController(), permanent: true);
+  Get.put(SignUpController(), permanent: true);
+  Get.put<DailyCarbonLogController>(
+    DailyCarbonLogController(repository: Get.find<DailyCarbonLogRepository>()),
+    permanent: true,
+  );
+
+  Get.lazyPut(() => UserController(), fenix: true);
+  Get.lazyPut(() => SplashcreenController(), fenix: true);
+  Get.lazyPut(() => CalendarController(), fenix: true);
+  Get.put(NavigationController(), permanent: true);
+  Get.lazyPut(() => ChecklistController(), fenix: true);
   runApp(const MyApp());
 }
 

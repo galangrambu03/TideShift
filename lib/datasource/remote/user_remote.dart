@@ -1,12 +1,12 @@
 import 'dart:convert';
+import 'package:ecomagara/config/config.dart';
 import 'package:ecomagara/datasource/models/leaderboardUserModel.dart';
 import 'package:ecomagara/datasource/models/userModel.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
 
 class UserDatasource {
-  // Ganti dengan IP lokal Flask kamu saat testing di device
-  final String baseUrl = 'http://192.168.1.25:5000';
+  final String baseUrl = AppConfig.localUrl;
 
   /// Get Firebase ID token
   Future<String> _getIdToken() async {
