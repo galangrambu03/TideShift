@@ -43,16 +43,16 @@ class GoalCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Icon(Icons.eco, color: AppColors.navbarIcon, size: 15,),
-                      SizedBox(width: 5),
-                      Text(
-                        "Save $carbonSaved kgCO2",
-                        style: TextStyle(color: AppColors.navbarIcon, fontSize: 13),
-                      ),
-                    ],
-                  ),
+                  // Row(
+                  //   children: [
+                  //     Icon(Icons.eco, color: AppColors.navbarIcon, size: 15,),
+                  //     SizedBox(width: 5),
+                  //     Text(
+                  //       "Save $carbonSaved kgCO2",
+                  //       style: TextStyle(color: AppColors.navbarIcon, fontSize: 13),
+                  //     ),
+                  //   ],
+                  // ),
                 ],
               )
               : Text(

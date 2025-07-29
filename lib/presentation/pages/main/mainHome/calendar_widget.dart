@@ -191,7 +191,6 @@ class KalenderBergambar extends StatelessWidget {
   
   // Show the the history detail (Total carbon, carbon per category, Island type)
   void showDetailHistory() {
-    TextEditingController emailController = TextEditingController();
     Get.dialog(
       Dialog(
         backgroundColor: AppColors.background, // warna latar belakang popup

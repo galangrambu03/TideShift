@@ -193,7 +193,7 @@ def submit_checklist():
 
     log = DailyCarbonLog(
         usersId=user.id,
-        totalCarbon=int(round(total_kg)),
+        totalCarbon=round(float(total_kg), 2),
         carbonLevel=level,
         IslandPath=level - 1,
         carbonSaved=int(payload.get("carbonSaved", 0)),

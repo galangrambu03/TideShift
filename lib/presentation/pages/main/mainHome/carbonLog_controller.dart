@@ -11,9 +11,11 @@ class DailyCarbonLogController extends GetxController {
   var isLoading = false.obs;
   var errorMessage = ''.obs;
   var fuzzyResponse = Rxn<FuzzyModel>();
-  RxList<DailyCarbonLogModel> logs = <DailyCarbonLogModel>[].obs;
   var isTodaySubmited = false.obs;
-  
+
+  var todayLog = Rxn<CarbonLogModel>();
+  var recentLogs = Rxn<List<CarbonLogModel>>();
+
   // Submit Daily Carbon Log and calculate total, next goals etc
   Future<void> submitDailyChecklist(Map<String, dynamic> checklistData) async {
     try {
@@ -36,7 +38,7 @@ class DailyCarbonLogController extends GetxController {
       Historical Data Points: ${fuzzyResponse.value!.historicalDataPoints}
       ''');
       await checkTodaySubmission();
-      print('TODAY SUBMIT INDICATOR: ${isTodaySubmited.value}');
+      await fetchTodayLog();
     } catch (e) {
       errorMessage.value = e.toString();
     } finally {
@@ -51,8 +53,41 @@ class DailyCarbonLogController extends GetxController {
       errorMessage.value = '';
       final response = await repository.checkTodaySubmission();
       isTodaySubmited.value = response.hasSubmitted;
+      print('TODAY SUBMIT INDICATOR: ${isTodaySubmited.value}');
     } catch (e) {
       errorMessage.value = e.toString();
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  // Check if user already submit or not
+  // bool get hasSubmittedToday => todayLog.value != null;
+
+  // Fetch today log
+  Future<void> fetchTodayLog() async {
+    try {
+      isLoading.value = true;
+      final log = await repository.getTodayLog();
+      todayLog.value = log;
+      print('TODAY LOG: ${todayLog.value}');
+    } catch (e) {
+      print('Error fetching today\'s log: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  // Fetch log up to 5 months
+  Future<void> fetchRecentLogs() async {
+    try {
+      isLoading.value = true;
+      final logs = await repository.getRecentLogs();
+      recentLogs.value = logs.isEmpty ? null : logs;
+      print('RECENT LOGS: ${recentLogs.value}');
+    } catch (e) {
+      print('Error recentLogs: $e');
+      recentLogs.value = null;
     } finally {
       isLoading.value = false;
     }

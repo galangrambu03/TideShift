@@ -19,4 +19,13 @@ class DailyCarbonLogRepositoryImpl implements DailyCarbonLogRepository {
     return remoteDataSource.checkTodaySubmission();
   }
 
+ @override
+  Future<CarbonLogModel?> getTodayLog() {
+    return remoteDataSource.getTodayLog();
+  }
+
+  @override
+  Future<List<CarbonLogModel>> getRecentLogs() {
+    return remoteDataSource.getRecentLogs();
+  }
 }

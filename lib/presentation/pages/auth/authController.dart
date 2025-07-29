@@ -17,6 +17,14 @@ class AuthController extends GetxController {
   void onInit() {
     super.onInit();
     user.value = FirebaseAuth.instance.currentUser;
+    if (user.value != null) {
+    // pengguna masih login, bisa langsung sync
+    userController.fetchUserProfile().then((_) {
+      isSync.value = true;
+    }).catchError((_) {
+      isSync.value = false;
+    });
+  }
   }
 
   bool get isLoggedIn => user.value != null;

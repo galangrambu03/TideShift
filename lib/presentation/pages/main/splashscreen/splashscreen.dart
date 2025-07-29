@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:ecomagara/config/colors.dart';
 import 'package:ecomagara/main.dart';
+import 'package:ecomagara/presentation/pages/auth/authController.dart';
 import 'package:ecomagara/presentation/pages/main/splashscreen/splashcreen_controller.dart';
 
 import 'package:flutter/material.dart';
@@ -18,17 +19,35 @@ class Splashscreen extends StatefulWidget {
 
 class _SplashscreenState extends State<Splashscreen> {
   final SplashcreenController splashcreenController = Get.find<SplashcreenController>();
+  final authController = Get.find<AuthController>();
 
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds: 5), () {
-      Get.off(
-        Main(),
-        transition: Transition.fadeIn,
-        duration: const Duration(milliseconds: 500),
-      );
-    });
+    _initApp();
+  }
+
+  Future<void> _initApp() async {
+    final start = DateTime.now();
+
+    if (authController.isLoggedIn) {
+      try {
+        await authController.userController.fetchUserProfile();
+        authController.isSync.value = true;
+      } catch (e) {
+        authController.isSync.value = false;
+      }
+    }
+
+    // Hitung sisa waktu agar minimal 5 detik
+    final elapsed = DateTime.now().difference(start);
+    final remaining = Duration(seconds: 5) - elapsed;
+    if (remaining > Duration.zero) {
+      await Future.delayed(remaining);
+    }
+
+    // Pindah ke halaman utama (Main akan handle isi user kosong / tidak)
+    Get.offAll(() => Main());
   }
 
   @override
@@ -36,7 +55,7 @@ class _SplashscreenState extends State<Splashscreen> {
     return Scaffold(
       body: Stack(
         children: [
-          // background image
+          // Background image
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
@@ -47,7 +66,7 @@ class _SplashscreenState extends State<Splashscreen> {
               ),
             ),
           ),
-          // main content (center)
+          // Main content (center)
           Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -64,7 +83,7 @@ class _SplashscreenState extends State<Splashscreen> {
               ],
             ),
           ),
-          // bottom text
+          // Bottom text
           Positioned(
             bottom: 30,
             left: 0,
@@ -82,7 +101,7 @@ class _SplashscreenState extends State<Splashscreen> {
                     child: Text(
                       splashcreenController.fact.value.content,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 11,
                         fontWeight: FontWeight.w500,

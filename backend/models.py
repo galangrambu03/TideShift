@@ -26,11 +26,11 @@ class DailyCarbonLog(db.Model):
     __tablename__ = 'dailycarbonlogs'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     usersId = db.Column(db.Integer, db.ForeignKey('users.id'))
-    totalCarbon = db.Column(db.Integer)
+    totalCarbon = db.Column(db.Float)
     carbonLevel = db.Column(db.Integer)
     IslandPath = db.Column(db.Integer)
     carbonSaved = db.Column(db.Integer)
-    carTravelKm = db.Column(db.Integer)
+    carTravelKm = db.Column(db.Float)
     packagedFood = db.Column(db.Boolean)
     showerTimeMinutes = db.Column(db.Integer)
     electronicTimeHours = db.Column(db.Integer)
@@ -43,3 +43,26 @@ class DailyCarbonLog(db.Model):
     saveEnergy = db.Column(db.Boolean)
     separateRecycleWaste = db.Column(db.Boolean)
     logDate = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc)) 
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "usersId": self.usersId,
+            "totalCarbon": self.totalCarbon,
+            "carbonLevel": self.carbonLevel,
+            "IslandPath": self.IslandPath,
+            "carbonSaved": self.carbonSaved,
+            "carTravelKm": self.carTravelKm,
+            "packagedFood": self.packagedFood,
+            "showerTimeMinutes": self.showerTimeMinutes,
+            "electronicTimeHours": self.electronicTimeHours,
+            "onlineShopping": self.onlineShopping,
+            "wasteFood": self.wasteFood,
+            "airConditioningHeating": self.airConditioningHeating,
+            "noDriving": self.noDriving,
+            "plantMealThanMeat": self.plantMealThanMeat,
+            "useTumbler": self.useTumbler,
+            "saveEnergy": self.saveEnergy,
+            "separateRecycleWaste": self.separateRecycleWaste,
+            "logDate": self.logDate.isoformat() if self.logDate else None
+        }

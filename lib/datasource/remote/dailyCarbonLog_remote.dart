@@ -7,10 +7,9 @@ import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 
-
 class DailyCarbonLogRemoteDataSource {
   final String baseUrl = AppConfig.localUrl;
-  
+
   // Submit daily carbon log (POST)
   Future<FuzzyModel> submitChecklist(Map<String, dynamic> payload) async {
     // ambil user token dari FirebaseAuth
@@ -64,16 +63,16 @@ class DailyCarbonLogRemoteDataSource {
     }
   }
 
-  // Ambil log hari ini saja
-  Future<List<CarbonLogModel>> getTodayLogs() async {
+  // Get today log (GET)
+  Future<CarbonLogModel?> getTodayLog() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) throw Exception("User not logged in");
-    final authToken = await user.getIdToken();
 
-    final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    final authToken = await user.getIdToken();
+    final todayDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
     final response = await http.get(
-      Uri.parse('$baseUrl/daily-carbon-logs?date_from=$today'),
+      Uri.parse('$baseUrl/daily-carbon-logs?date_from=$todayDate&per_page=1'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $authToken',
@@ -83,23 +82,40 @@ class DailyCarbonLogRemoteDataSource {
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       final logs = data['logs'] as List;
-      return logs.map((json) => CarbonLogModel.fromJson(json)).toList();
+      if (logs.isNotEmpty) {
+        try {
+          return CarbonLogModel.fromJson(logs.first);
+        } catch (e, stack) {
+          print('Parsing error: $e');
+          print('Stacktrace: $stack');
+          print('Raw log: ${logs.first}');
+          rethrow;
+        }
+      } else {
+        return null; // tidak ada log hari ini
+      }
     } else {
-      throw Exception('Failed to fetch today logs: ${response.body}');
+      throw Exception('Failed to fetch today\'s log: ${response.body}');
     }
   }
 
-  // Ambil log 5 bulan terakhir (jika tersedia)
-  Future<List<CarbonLogModel>> getRecentLogs({int page = 1, int perPage = 100}) async {
+  // Get logs up to 5 month ago (GET)
+  Future<List<CarbonLogModel>> getRecentLogs({
+    int page = 1,
+    int perPage = 100,
+  }) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) throw Exception("User not logged in");
     final authToken = await user.getIdToken();
 
-    final fiveMonthsAgo = DateFormat('yyyy-MM-dd')
-        .format(DateTime.now().subtract(Duration(days: 30 * 5)));
+    final fiveMonthsAgo = DateFormat(
+      'yyyy-MM-dd',
+    ).format(DateTime.now().subtract(Duration(days: 30 * 5)));
 
     final response = await http.get(
-      Uri.parse('$baseUrl/daily-carbon-logs?date_from=$fiveMonthsAgo&page=$page&per_page=$perPage'),
+      Uri.parse(
+        '$baseUrl/daily-carbon-logs?date_from=$fiveMonthsAgo&page=$page&per_page=$perPage',
+      ),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $authToken',

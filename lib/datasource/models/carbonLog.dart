@@ -19,7 +19,7 @@ class FuzzyModel {
 
   factory FuzzyModel.fromJson(Map<String, dynamic> json) {
     return FuzzyModel(
-      totalCarbon: (json['totalcarbon'] as num).toDouble(),
+      totalCarbon: json['totalcarbon'],
       carbonLevel: json['carbonLevel'],
       islandPath: json['carbonLevel'] - 1,
       emissionCategory: json['emission_category'],

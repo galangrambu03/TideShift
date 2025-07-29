@@ -1,0 +1,18 @@
+[
+  { "id": 1, "label": "That's like a {carbon:carbonWeight} cow farts!", "carbonWeight": 0.12 },
+  { "id": 2, "label": "That's like a cow letting one rip {carbon:carbonWeight} times!", "carbonWeight": 0.12 },
+  { "id": 3, "label": "It's like a grandma forgetting to turn off the stove for {carbon:carbonWeight} minutes", "carbonWeight": 0.03 },
+  { "id": 4, "label": "It's like charging your phone {carbon:carbonWeight} times", "carbonWeight": 0.005 },
+  { "id": 5, "label": "That's like eating {carbon:carbonWeight} burgers in one sitting!", "carbonWeight": 3.0 },
+  { "id": 6, "label": "Equivalent to driving a car for {carbon:carbonWeight} km!", "carbonWeight": 0.2 },
+  { "id": 7, "label": "As much as leaving your TV on for {carbon:carbonWeight} hours", "carbonWeight": 0.05 },
+  { "id": 8, "label": "That's like baking {carbon:carbonWeight} pizzas in the oven", "carbonWeight": 1.5 },
+  { "id": 9, "label": "Same as brewing {carbon:carbonWeight} cups of coffee", "carbonWeight": 0.15 },
+  { "id": 10, "label": "It's like sending {carbon:carbonWeight} thousand emails with attachments!", "carbonWeight": 0.02 },
+  { "id": 11, "label": "That's like keeping your air conditioner on for {carbon:carbonWeight} hours", "carbonWeight": 0.6 },
+  { "id": 12, "label": "Equivalent to {carbon:carbonWeight} liters of gasoline burned", "carbonWeight": 2.3 },
+  { "id": 13, "label": "Same as planting {carbon:carbonWeight} trees and cutting them down instantly!", "carbonWeight": 5.0 },
+  { "id": 14, "label": "It's like leaving a hair dryer running for {carbon:carbonWeight} hours", "carbonWeight": 0.3 },
+  { "id": 15, "label": "That's like a jet flying {carbon:carbonWeight} km in the sky", "carbonWeight": 0.25 },
+  {"id": 16, "label": "It's like dumping {carbon:carbonWeight} plastic bottles into the ocean (but please don't!)", "carbonWeight": 0.03}
+]

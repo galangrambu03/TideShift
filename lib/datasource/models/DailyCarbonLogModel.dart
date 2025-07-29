@@ -3,7 +3,7 @@ class CarbonLogModel {
   final int id;
   final int usersId;
   final String logDate;
-  final int totalCarbon;
+  final double totalCarbon;
   final int carbonLevel;
   final int islandPath;
   final int carbonSaved;
@@ -47,9 +47,9 @@ class CarbonLogModel {
       id: json['id'],
       usersId: json['usersId'],
       logDate: json['logDate'],
-      totalCarbon: json['totalCarbon'],
+      totalCarbon: (json['totalCarbon'] as num).toDouble(),
       carbonLevel: json['carbonLevel'],
-      islandPath: json['islandPath'],
+      islandPath: json['IslandPath'],
       carbonSaved: json['carbonSaved'],
       carTravelKm: (json['carTravelKm'] as num).toDouble(),
       packagedFood: json['packagedFood'] == 1,

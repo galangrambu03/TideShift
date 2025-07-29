@@ -1,6 +1,8 @@
 import 'package:ecomagara/config/colors.dart';
 import 'package:ecomagara/main.dart';
+import 'package:ecomagara/presentation/pages/main/mainChecklist/checklist_controller.dart';
 import 'package:ecomagara/presentation/pages/main/mainHome/calendar_widget.dart';
+import 'package:ecomagara/presentation/pages/main/mainHome/carbonLog_controller.dart';
 import 'package:ecomagara/presentation/pages/main/pointShop/shop_page.dart';
 import 'package:ecomagara/presentation/pages/main/profile/profile_page.dart';
 import 'package:ecomagara/presentation/widgets/defaultButton.dart';
@@ -11,6 +13,10 @@ import 'package:get/get.dart';
 
 class Homepage extends StatelessWidget {
   final UserController userController = Get.find<UserController>();
+  final ChecklistController checklistController =
+      Get.find<ChecklistController>();
+  final DailyCarbonLogController carbonLogController = Get.find();
+
   Homepage({super.key});
 
   @override
@@ -106,7 +112,7 @@ class Homepage extends StatelessWidget {
                       Icon(Icons.auto_awesome, color: AppColors.primary),
                       SizedBox(width: 8),
                       Text(
-                        'Today Goals',
+                        'Next Goals',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
@@ -115,6 +121,14 @@ class Homepage extends StatelessWidget {
                       ),
                     ],
                   ),
+                  SizedBox(height: 5),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "Goals that you need try to achieve for the next recap!",
+                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -122,7 +136,7 @@ class Homepage extends StatelessWidget {
             const SizedBox(height: 10),
 
             SizedBox(
-              height: 90,
+              height: 70,
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -181,14 +195,21 @@ class Homepage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'You’ve not recap your carbon yet today',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                Obx(() {
+                  final submitted = checklistController.isTodaySubmited.value;
+                  final todayLog = carbonLogController.todayLog.value;
+
+                  if (submitted && todayLog != null) {
+                    return Text(
+                      "You've submitted today, total ${todayLog.totalCarbon}",
+                    );
+                  } else {
+                    return const Text(
+                      "You haven't recapped your carbon yet today",
+                    );
+                  }
+                }),
+
                 const SizedBox(height: 8),
                 Align(
                   alignment: Alignment.bottomRight,

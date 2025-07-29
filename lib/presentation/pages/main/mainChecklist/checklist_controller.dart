@@ -6,11 +6,14 @@ class ChecklistController extends GetxController {
   final DailyCarbonLogController _dailyCarbonLogController = Get.find();
   var isTodaySubmited = false.obs;
 
+  // Check user today submition when controller first inisialized
   @override
-  void onInit() async{
-    // TODO: implement onInit
+  void onInit() async {
     await _dailyCarbonLogController.checkTodaySubmission();
     isTodaySubmited.value = _dailyCarbonLogController.isTodaySubmited.value;
+    if (isTodaySubmited.value == true) {
+      await _dailyCarbonLogController.fetchTodayLog();
+    }
     super.onInit();
   }
 
