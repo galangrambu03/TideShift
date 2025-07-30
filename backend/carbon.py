@@ -33,9 +33,9 @@ CATEGORY_MAPPING = {
 
 # Default values for fuzzy logic
 DEFAULT_VALUES = {
-    'carTravelKm': 18,
-    'showerTimeMinutes': 10,
-    'electronicTimeHours': 7
+    'carTravelKm': 10,
+    'showerTimeMinutes': 12,
+    'electronicTimeHours': 8
 }
 
 def calculate_carbon_emissions(payload):
@@ -133,20 +133,11 @@ class CarbonFuzzySystem:
             'electronicTimeHours': electronic_data[middle]
         }
     
+
     @staticmethod
     def fuzzy_system_analysis(car_km, shower_min, electronic_hours, normal_values):
-        """
-        Fuzzy Logic System to provide activity reduction suggestions
-        
-        Args:
-            car_km, shower_min, electronic_hours (float): Current activity values
-            normal_values (dict): Normal values from historical data
-        
-        Returns:
-            dict: Suggested values and analysis results
-        """
         try:
-            # Create value ranges
+            # create value ranges
             max_car = max(50, normal_values['carTravelKm'] * 3)
             max_shower = max(30, normal_values['showerTimeMinutes'] * 3)
             max_electronic = max(24, normal_values['electronicTimeHours'] * 3)
@@ -156,69 +147,81 @@ class CarbonFuzzySystem:
             range_electronic = np.arange(0, max_electronic, 1)
             range_suggestion = np.arange(0, 21, 1)
             
-            # Define membership functions for 'high' usage
+            # membership functions for high usage
             car_high = fuzz.trimf(range_car, [
+                normal_values['carTravelKm'] * 0.8,
                 normal_values['carTravelKm'] * 1.2,
-                normal_values['carTravelKm'] * 1.8,
-                normal_values['carTravelKm'] * 3
+                normal_values['carTravelKm'] * 2
             ])
-            
             shower_long = fuzz.trimf(range_shower, [
+                normal_values['showerTimeMinutes'] * 0.8,
                 normal_values['showerTimeMinutes'] * 1.2,
-                normal_values['showerTimeMinutes'] * 1.8,
-                normal_values['showerTimeMinutes'] * 3
+                normal_values['showerTimeMinutes'] * 2
             ])
-            
             electronic_much = fuzz.trimf(range_electronic, [
+                normal_values['electronicTimeHours'] * 0.8,
                 normal_values['electronicTimeHours'] * 1.2,
-                normal_values['electronicTimeHours'] * 1.8,
-                normal_values['electronicTimeHours'] * 3
+                normal_values['electronicTimeHours'] * 2
             ])
             
-            # Suggestion functions
+            # suggestion functions
             suggestion_light = fuzz.trimf(range_suggestion, [2, 5, 8])
             suggestion_moderate = fuzz.trimf(range_suggestion, [4, 8, 12])
+            suggestion_aggressive = fuzz.trimf(range_suggestion, [8, 12, 16])
             
-            # Calculate membership degrees
+            # membership degrees
             degree_car_high = fuzz.interp_membership(range_car, car_high, car_km)
             degree_shower_long = fuzz.interp_membership(range_shower, shower_long, shower_min)
             degree_electronic_much = fuzz.interp_membership(range_electronic, electronic_much, electronic_hours)
             
-            # Minimum limits (90% of normal)
+            # minimum limits (90% of normal)
             min_car = normal_values['carTravelKm'] * 0.9
             min_shower = normal_values['showerTimeMinutes'] * 0.9
             min_electronic = normal_values['electronicTimeHours'] * 0.9
             
-            # Apply fuzzy rules
-            # Car suggestions
-            if degree_car_high > 0.3:
-                reduction = fuzz.defuzz(range_suggestion, suggestion_moderate * degree_car_high, 'centroid')
-                suggested_car = max(min_car, car_km - (reduction * 0.5))
-            elif degree_car_high > 0.1:
-                reduction = fuzz.defuzz(range_suggestion, suggestion_light * degree_car_high, 'centroid')
-                suggested_car = max(min_car, car_km - (reduction * 0.3))
+            # --- car suggestions ---
+            if car_km > normal_values['carTravelKm']:
+                if degree_car_high > 0.6:
+                    reduction = fuzz.defuzz(range_suggestion, suggestion_aggressive * degree_car_high, 'centroid')
+                    suggested_car = max(min_car, car_km - (reduction * 0.6))
+                elif degree_car_high > 0.3:
+                    reduction = fuzz.defuzz(range_suggestion, suggestion_moderate * degree_car_high, 'centroid')
+                    suggested_car = max(min_car, car_km - (reduction * 0.4))
+                else:
+                    suggested_car = car_km
             else:
-                suggested_car = car_km
+                suggested_car = car_km  # already below normal
             
-            # Shower suggestions
-            if degree_shower_long > 0.3:
-                reduction = fuzz.defuzz(range_suggestion, suggestion_moderate * degree_shower_long, 'centroid')
-                suggested_shower = max(min_shower, shower_min - (reduction * 0.3))
-            elif degree_shower_long > 0.1:
-                reduction = fuzz.defuzz(range_suggestion, suggestion_light * degree_shower_long, 'centroid')
-                suggested_shower = max(min_shower, shower_min - (reduction * 0.2))
+            # --- shower suggestions ---
+            if shower_min > normal_values['showerTimeMinutes']:
+                if degree_shower_long > 0.6:
+                    reduction = fuzz.defuzz(range_suggestion, suggestion_aggressive * degree_shower_long, 'centroid')
+                    suggested_shower = max(min_shower, shower_min - (reduction * 0.5))
+                elif degree_shower_long > 0.3:
+                    reduction = fuzz.defuzz(range_suggestion, suggestion_moderate * degree_shower_long, 'centroid')
+                    suggested_shower = max(min_shower, shower_min - (reduction * 0.3))
+                else:
+                    suggested_shower = shower_min
             else:
                 suggested_shower = shower_min
             
-            # Electronic suggestions
-            if degree_electronic_much > 0.3:
-                reduction = fuzz.defuzz(range_suggestion, suggestion_moderate * degree_electronic_much, 'centroid')
-                suggested_electronic = max(min_electronic, electronic_hours - (reduction * 0.2))
-            elif degree_electronic_much > 0.1:
-                reduction = fuzz.defuzz(range_suggestion, suggestion_light * degree_electronic_much, 'centroid')
-                suggested_electronic = max(min_electronic, electronic_hours - (reduction * 0.15))
+            # --- electronic suggestions ---
+            if electronic_hours > normal_values['electronicTimeHours']:
+                if degree_electronic_much > 0.6:
+                    reduction = fuzz.defuzz(range_suggestion, suggestion_aggressive * degree_electronic_much, 'centroid')
+                    suggested_electronic = max(min_electronic, electronic_hours - (reduction * 0.4))
+                elif degree_electronic_much > 0.3:
+                    reduction = fuzz.defuzz(range_suggestion, suggestion_moderate * degree_electronic_much, 'centroid')
+                    suggested_electronic = max(min_electronic, electronic_hours - (reduction * 0.25))
+                else:
+                    suggested_electronic = electronic_hours
             else:
                 suggested_electronic = electronic_hours
+            
+            # jangan biarkan saran lebih tinggi dari normal
+            suggested_car = min(suggested_car, normal_values['carTravelKm'])
+            suggested_shower = min(suggested_shower, normal_values['showerTimeMinutes'])
+            suggested_electronic = min(suggested_electronic, normal_values['electronicTimeHours'])
             
             return {
                 'suggestions': {
@@ -238,9 +241,7 @@ class CarbonFuzzySystem:
                 },
                 'normal_values': normal_values
             }
-            
-        except Exception as e:
-            # Fallback if fuzzy calculation fails
+        except Exception:
             return {
                 'suggestions': {
                     'carTravelKm': car_km * 0.9,
@@ -259,6 +260,7 @@ class CarbonFuzzySystem:
                 },
                 'normal_values': normal_values
             }
+
 
 def generate_improvement_suggestions(payload):
     """

@@ -9,12 +9,17 @@ class ChecklistController extends GetxController {
   // Check user today submition when controller first inisialized
   @override
   void onInit() async {
+    super.onInit();
+
+    // check if user already submit
     await _dailyCarbonLogController.checkTodaySubmission();
     isTodaySubmited.value = _dailyCarbonLogController.isTodaySubmited.value;
-    if (isTodaySubmited.value == true) {
+
+    if (isTodaySubmited.value) {
       await _dailyCarbonLogController.fetchTodayLog();
     }
-    super.onInit();
+
+    _dailyCarbonLogController.todayLog.refresh();
   }
 
   // list of carbon variables questions content
@@ -118,7 +123,7 @@ class ChecklistController extends GetxController {
       if (item.value is RxDouble) item.value.value = 0.0;
     }
   }
-
+  
   //Function to calculate value of carbon by each categories
   Map<String, double> getCarbonByCategory() {
     final transport =

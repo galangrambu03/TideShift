@@ -36,13 +36,11 @@ class FuzzyAnalysis {
   final Map<String, double> suggestions;
   final double potentialSavings;
   final Map<String, double> normalValues;
-  final Map<String, String> intensityLevels;
 
   FuzzyAnalysis({
     required this.suggestions,
     required this.potentialSavings,
     required this.normalValues,
-    required this.intensityLevels,
   });
 
   factory FuzzyAnalysis.fromJson(Map<String, dynamic> json) {
@@ -54,7 +52,6 @@ class FuzzyAnalysis {
       normalValues: Map<String, double>.from(
         json['normal_values'].map((k, v) => MapEntry(k, (v as num).toDouble())),
       ),
-      intensityLevels: Map<String, String>.from(json['intensity_levels']),
     );
   }
 }

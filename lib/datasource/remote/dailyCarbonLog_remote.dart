@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:ecomagara/config/config.dart';
 import 'package:ecomagara/datasource/models/DailyCarbonLogModel.dart';
-import 'package:ecomagara/datasource/models/carbonLog.dart';
+import 'package:ecomagara/datasource/models/FuzzyModel.dart';
 import 'package:ecomagara/datasource/models/checkSubmission.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
@@ -10,9 +10,22 @@ import 'package:intl/intl.dart';
 class DailyCarbonLogRemoteDataSource {
   final String baseUrl = AppConfig.localUrl;
 
+  // fungsi retry request untuk mengatasi token used too early
+  Future<http.Response> _retryRequest(Future<http.Response> Function() requestFn) async {
+    final response = await requestFn();
+
+    if (response.statusCode == 401 &&
+        response.body.contains("Token used too early")) {
+      print("⚠ Token too early, retrying in 2 seconds...");
+      await Future.delayed(Duration(seconds: 2));
+      return await requestFn();
+    }
+
+    return response;
+  }
+
   // Submit daily carbon log (POST)
   Future<FuzzyModel> submitChecklist(Map<String, dynamic> payload) async {
-    // ambil user token dari FirebaseAuth
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
       throw Exception("User not logged in");
@@ -20,16 +33,18 @@ class DailyCarbonLogRemoteDataSource {
 
     final authToken = await user.getIdToken();
 
-    final response = await http.post(
-      Uri.parse('$baseUrl/submit-checklist'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $authToken',
-      },
-      body: jsonEncode(payload),
-    );
+    final response = await _retryRequest(() {
+      return http.post(
+        Uri.parse('$baseUrl/submit-checklist'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $authToken',
+        },
+        body: jsonEncode(payload),
+      );
+    });
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final data = jsonDecode(response.body);
       return FuzzyModel.fromJson(data);
     } else {
@@ -46,13 +61,15 @@ class DailyCarbonLogRemoteDataSource {
 
     final authToken = await user.getIdToken();
 
-    final response = await http.get(
-      Uri.parse('$baseUrl/check-today-submission'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $authToken',
-      },
-    );
+    final response = await _retryRequest(() {
+      return http.get(
+        Uri.parse('$baseUrl/check-today-submission'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $authToken',
+        },
+      );
+    });
 
     final data = jsonDecode(response.body);
 
@@ -71,13 +88,17 @@ class DailyCarbonLogRemoteDataSource {
     final authToken = await user.getIdToken();
     final todayDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
-    final response = await http.get(
-      Uri.parse('$baseUrl/daily-carbon-logs?date_from=$todayDate&per_page=1'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $authToken',
-      },
-    );
+    final response = await _retryRequest(() {
+      return http.get(
+        Uri.parse(
+          '$baseUrl/daily-carbon-logs?date_from=$todayDate&per_page=1&today_only=true',
+        ),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $authToken',
+        },
+      );
+    });
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -92,7 +113,7 @@ class DailyCarbonLogRemoteDataSource {
           rethrow;
         }
       } else {
-        return null; // tidak ada log hari ini
+        return null;
       }
     } else {
       throw Exception('Failed to fetch today\'s log: ${response.body}');
@@ -112,15 +133,17 @@ class DailyCarbonLogRemoteDataSource {
       'yyyy-MM-dd',
     ).format(DateTime.now().subtract(Duration(days: 30 * 5)));
 
-    final response = await http.get(
-      Uri.parse(
-        '$baseUrl/daily-carbon-logs?date_from=$fiveMonthsAgo&page=$page&per_page=$perPage',
-      ),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $authToken',
-      },
-    );
+    final response = await _retryRequest(() {
+      return http.get(
+        Uri.parse(
+          '$baseUrl/daily-carbon-logs?date_from=$fiveMonthsAgo&page=$page&per_page=$perPage',
+        ),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $authToken',
+        },
+      );
+    });
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);

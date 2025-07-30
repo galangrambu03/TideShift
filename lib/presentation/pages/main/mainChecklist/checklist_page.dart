@@ -1,6 +1,7 @@
 import 'package:ecomagara/config/colors.dart';
 import 'package:ecomagara/datasource/models/ChecklistItemModel.dart';
 import 'package:ecomagara/functions/getCarbonColor_switch.dart';
+import 'package:ecomagara/presentation/pages/main/mainChecklist/carbonUnit_controller.dart';
 import 'package:ecomagara/presentation/pages/main/mainHome/carbonLog_controller.dart';
 import 'package:ecomagara/presentation/widgets/defaultButton.dart';
 import 'package:ecomagara/presentation/widgets/goalCard.dart';
@@ -16,6 +17,22 @@ class ChecklistPage extends StatefulWidget {
 class _ChecklistPageState extends State<ChecklistPage> {
   final controller = Get.put(ChecklistController());
   final DailyCarbonLogController carbonLogController = Get.find();
+  final CarbonUnitController carbonUnitController = Get.find();
+
+  @override
+  void initState() {
+    super.initState();
+    if (carbonLogController.isTodaySubmited.value == true) {
+      _loadHumor();
+    }
+  }
+
+  Future<void> _loadHumor() async {
+    await carbonUnitController.loadHumor(
+      carbonLogController.todayLog.value!.totalCarbon,
+    );
+    print('HUMOUR TEXT: ${carbonUnitController.humorText}');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -197,6 +214,7 @@ class _ChecklistPageState extends State<ChecklistPage> {
                           (controller.carbonVariables[7].value.value ? 1 : 0),
                           (controller.carbonVariables[8].value.value ? 1 : 0),
                         );
+                         _loadHumor();
                       } catch (e) {
                         Get.snackbar(
                           'Error',
@@ -260,6 +278,7 @@ class _ChecklistPageState extends State<ChecklistPage> {
 
                   // total karbon
                   Container(
+                    width: double.infinity,
                     padding: const EdgeInsets.symmetric(
                       vertical: 8,
                       horizontal: 16,
@@ -277,7 +296,7 @@ class _ChecklistPageState extends State<ChecklistPage> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 25),
 
                   // perbandingan lucu
                   Column(
@@ -288,14 +307,16 @@ class _ChecklistPageState extends State<ChecklistPage> {
                       ),
                       SizedBox(height: 4),
                       // TODO: Implement unique con
-                      Text(
-                        "That's like a cow letting one rip 20 times!",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 14),
+                      Obx(
+                        () => Text(
+                          carbonUnitController.humorText.value,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 14),
+                        ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 50),
 
                   // grafik diganti teks
                   Container(
@@ -308,7 +329,7 @@ class _ChecklistPageState extends State<ChecklistPage> {
                     alignment: Alignment.center,
                     child: const Text("grafik", style: TextStyle(fontSize: 16)),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 50),
                 ],
               ),
             ),

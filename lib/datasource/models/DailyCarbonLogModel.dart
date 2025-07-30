@@ -73,7 +73,7 @@ class CarbonLogModel {
       'logDate': logDate,
       'totalCarbon': totalCarbon,
       'carbonLevel': carbonLevel,
-      'islandPath': islandPath,
+      'IslandPath': islandPath,
       'carbonSaved': carbonSaved,
       'carTravelKm': carTravelKm,
       'packagedFood': packagedFood ? 1 : 0,

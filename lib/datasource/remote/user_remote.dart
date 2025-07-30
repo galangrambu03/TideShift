@@ -17,6 +17,20 @@ class UserDatasource {
     return idToken;
   }
 
+  /// Helper retry function for token issue
+  Future<http.Response> _retryRequest(Future<http.Response> Function() requestFn) async {
+    final response = await requestFn();
+
+    if (response.statusCode == 401 &&
+        response.body.contains("Token used too early")) {
+      print("⚠ Token too early, retrying in 2 seconds...");
+      await Future.delayed(Duration(seconds: 2));
+      return await requestFn();
+    }
+
+    return response;
+  }
+
   /// Sync user after first sign up (POST /me)
   Future<void> syncUser({
     required String username,
@@ -24,17 +38,20 @@ class UserDatasource {
   }) async {
     final idToken = await _getIdToken();
 
-    final response = await http.post(
-      Uri.parse('$baseUrl/me'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $idToken',
-      },
-      body: jsonEncode({
-        'username': username,
-        'profilePicture': profilePicture,
-      }),
-    );
+    final response = await _retryRequest(() {
+      return http.post(
+        Uri.parse('$baseUrl/me'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
+        body: jsonEncode({
+          'username': username,
+          'profilePicture': profilePicture,
+        }),
+      );
+    });
+
     print("STATUS CODE: ${response.statusCode}");
     print("BODY: ${response.body}");
 
@@ -47,10 +64,12 @@ class UserDatasource {
   Future<UserModel> getProfile() async {
     final idToken = await _getIdToken();
 
-    final response = await http.get(
-      Uri.parse('$baseUrl/me'),
-      headers: {'Authorization': 'Bearer $idToken'},
-    );
+    final response = await _retryRequest(() {
+      return http.get(
+        Uri.parse('$baseUrl/me'),
+        headers: {'Authorization': 'Bearer $idToken'},
+      );
+    });
 
     if (response.statusCode != 200) {
       throw Exception("Failed to get profile: ${response.body}");
@@ -64,11 +83,13 @@ class UserDatasource {
   Future<List<LeaderboardUserModel>> getLeaderboard() async {
     final idToken = await _getIdToken();
 
-    final response = await http.get(
-      Uri.parse('$baseUrl/leaderboard'),
-      headers: {'Authorization': 'Bearer $idToken'},
-    );
-    
+    final response = await _retryRequest(() {
+      return http.get(
+        Uri.parse('$baseUrl/leaderboard'),
+        headers: {'Authorization': 'Bearer $idToken'},
+      );
+    });
+
     if (response.statusCode != 200) {
       throw Exception("Failed to fetch leaderboard: ${response.body}");
     }

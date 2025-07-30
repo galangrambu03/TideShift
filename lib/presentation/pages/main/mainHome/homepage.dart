@@ -103,7 +103,15 @@ class Homepage extends StatelessWidget {
                   const SizedBox(height: 24),
 
                   // Recap Carbon Container
-                  notRecapContainer(),
+                  Obx(() {
+                    final submitted = carbonLogController.isTodaySubmited.value;
+                    final todayLog = carbonLogController.todayLog.value;
+
+                    return submitted && todayLog != null
+                        ? recapContainer()
+                        : notRecapContainer();
+                  }),
+
                   const SizedBox(height: 24),
 
                   // Today Goals
@@ -195,22 +203,16 @@ class Homepage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Obx(() {
-                  final submitted = checklistController.isTodaySubmited.value;
-                  final todayLog = carbonLogController.todayLog.value;
+                const Text(
+                  "You haven't recapped your carbon yet today",
+                  style: TextStyle(
+                    color: AppColors.surface,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
 
-                  if (submitted && todayLog != null) {
-                    return Text(
-                      "You've submitted today, total ${todayLog.totalCarbon}",
-                    );
-                  } else {
-                    return const Text(
-                      "You haven't recapped your carbon yet today",
-                    );
-                  }
-                }),
-
-                const SizedBox(height: 8),
+                const SizedBox(height: 10),
                 Align(
                   alignment: Alignment.bottomRight,
                   child: SizedBox(
@@ -226,6 +228,45 @@ class Homepage extends StatelessWidget {
                   ),
                 ),
               ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Widget if user have recap carbon
+  Widget recapContainer() {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        gradient: AppColors.primaryGradient,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              const Text(
+                "Your island today!",
+                style: TextStyle(
+                  color: AppColors.surface,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              ),
+              Image.asset(
+                'assets/images/decorationImages/mascotHappy.png',
+                height: 90,
+              ),
+            ],
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Image.asset(
+              'assets/images/islandsImages/island${carbonLogController.todayLog.value!.islandPath}.png',
+              scale: 2,
             ),
           ),
         ],

@@ -1,5 +1,5 @@
 import 'package:ecomagara/datasource/models/DailyCarbonLogModel.dart';
-import 'package:ecomagara/datasource/models/carbonLog.dart';
+import 'package:ecomagara/datasource/models/FuzzyModel.dart';
 import 'package:ecomagara/datasource/models/checkSubmission.dart';
 import 'package:ecomagara/datasource/remote/dailyCarbonLog_remote.dart';
 import 'package:ecomagara/domain/repositories/dailyCarbonLog_repository.dart';

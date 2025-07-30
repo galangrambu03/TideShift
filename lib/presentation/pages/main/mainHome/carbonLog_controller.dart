@@ -1,5 +1,5 @@
 import 'package:ecomagara/datasource/models/DailyCarbonLogModel.dart';
-import 'package:ecomagara/datasource/models/carbonLog.dart';
+import 'package:ecomagara/datasource/models/FuzzyModel.dart';
 import 'package:ecomagara/domain/repositories/dailyCarbonLog_repository.dart';
 import 'package:get/get.dart';
 
@@ -23,20 +23,21 @@ class DailyCarbonLogController extends GetxController {
       errorMessage.value = '';
 
       final response = await repository.submitChecklist(checklistData);
+      print('RAW RESPONSE: $response');
       fuzzyResponse.value = response;
       print('''RESPON FUZZY LOGIC: 
       Total carbon: ${fuzzyResponse.value!.totalCarbon}
       Carbon Level: ${fuzzyResponse.value!.carbonLevel}
       Island Path: ${fuzzyResponse.value!.islandPath}
       Emission Category: ${fuzzyResponse.value!.emissionCategory}
-      Improvement Suggestions: ${fuzzyResponse.value!.improvementSuggestions});
+      Improvement Suggestions: ${fuzzyResponse.value!.improvementSuggestions}
       Fuzzy Analysis: 
         Suggestions: ${fuzzyResponse.value!.fuzzyAnalysis.suggestions}
         Potential Savings : ${fuzzyResponse.value!.fuzzyAnalysis.potentialSavings}
         Normal Values : ${fuzzyResponse.value!.fuzzyAnalysis.normalValues}
-        Intensity Levels : ${fuzzyResponse.value!.fuzzyAnalysis.intensityLevels}
       Historical Data Points: ${fuzzyResponse.value!.historicalDataPoints}
       ''');
+
       await checkTodaySubmission();
       await fetchTodayLog();
     } catch (e) {

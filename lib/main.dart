@@ -1,9 +1,11 @@
 import 'package:ecomagara/config/colors.dart';
 import 'package:ecomagara/config/config.dart';
+import 'package:ecomagara/datasource/local/carbonUnit.dart';
 import 'package:ecomagara/datasource/local/unique_fact.dart';
 import 'package:ecomagara/datasource/remote/dailyCarbonLog_remote.dart';
 import 'package:ecomagara/datasource/remote/user_remote.dart';
 import 'package:ecomagara/datasource/repositories/carbonLog_impl.dart';
+import 'package:ecomagara/datasource/repositories/carbonUnit_impl.dart';
 import 'package:ecomagara/datasource/repositories/fact_impl.dart';
 import 'package:ecomagara/datasource/repositories/user_impl.dart';
 import 'package:ecomagara/datasource/services/firebaseAuthServices.dart';
@@ -14,6 +16,7 @@ import 'package:ecomagara/presentation/pages/auth/SignupPage/signUp_controller.d
 import 'package:ecomagara/presentation/pages/auth/authController.dart';
 import 'package:ecomagara/presentation/pages/auth/authPage/auth_page.dart';
 import 'package:ecomagara/presentation/pages/auth/loginPage/login_controller.dart';
+import 'package:ecomagara/presentation/pages/main/mainChecklist/carbonUnit_controller.dart';
 import 'package:ecomagara/presentation/pages/main/mainChecklist/checklist_controller.dart';
 import 'package:ecomagara/presentation/pages/main/mainChecklist/checklist_page.dart';
 import 'package:ecomagara/presentation/pages/main/mainDisaster/disaster_page.dart';
@@ -66,6 +69,15 @@ Future<void> main() async {
   Get.lazyPut(() => CalendarController(), fenix: true);
   Get.put(NavigationController(), permanent: true);
   Get.lazyPut(() => ChecklistController(), fenix: true);
+  Get.lazyPut(
+    () => CarbonUnitController(
+      repository: CarbonUnitRepositoryImpl(
+        dataSource: CarbonUnitLocalDataSource(),
+      ),
+    ),
+    fenix: true,
+  );
+  
   runApp(const MyApp());
 }
 

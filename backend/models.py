@@ -1,10 +1,5 @@
-from datetime import datetime, timezone
+from datetime import date
 from flask_sqlalchemy import SQLAlchemy
-
-db = SQLAlchemy()
-
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.sql import func
 
 db = SQLAlchemy()
 
@@ -42,7 +37,7 @@ class DailyCarbonLog(db.Model):
     useTumbler = db.Column(db.Boolean)
     saveEnergy = db.Column(db.Boolean)
     separateRecycleWaste = db.Column(db.Boolean)
-    logDate = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc)) 
+    logDate = db.Column(db.Date, nullable=False, default=date.today) 
 
     def to_dict(self):
         return {
