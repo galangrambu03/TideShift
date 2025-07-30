@@ -15,10 +15,16 @@ class CarbonUnitRepositoryImpl implements CarbonUnitRepository {
 
   @override
   Future<String> getRandomHumorLabel(double totalCarbon) async {
-    final units = await getCarbonUnits();
-    final random = Random();
-    final unit = units[random.nextInt(units.length)];
-    final count = (totalCarbon / unit.carbonWeight).floor().clamp(1, 9999);
-    return unit.label.replaceAll("{carbon:carbonWeight}", count.toString());
+  final units = await getCarbonUnits();
+  final random = Random();
+  final unit = units[random.nextInt(units.length)];
+
+  if (totalCarbon <= 0) {
+    return "Amazing! your total net carbon emission is 0!";
   }
+
+  final count = (totalCarbon / unit.carbonWeight).floor().clamp(1, 9999);
+  return unit.label.replaceAll("{carbon:carbonWeight}", count.toString());
+}
+
 }

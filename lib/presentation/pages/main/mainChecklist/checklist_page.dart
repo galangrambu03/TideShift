@@ -4,6 +4,7 @@ import 'package:ecomagara/functions/getCarbonColor_switch.dart';
 import 'package:ecomagara/presentation/pages/main/mainChecklist/carbonUnit_controller.dart';
 import 'package:ecomagara/presentation/pages/main/mainHome/carbonLog_controller.dart';
 import 'package:ecomagara/presentation/widgets/defaultButton.dart';
+import 'package:ecomagara/presentation/widgets/donutChart.dart';
 import 'package:ecomagara/presentation/widgets/goalCard.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -214,7 +215,7 @@ class _ChecklistPageState extends State<ChecklistPage> {
                           (controller.carbonVariables[7].value.value ? 1 : 0),
                           (controller.carbonVariables[8].value.value ? 1 : 0),
                         );
-                         _loadHumor();
+                        _loadHumor();
                       } catch (e) {
                         Get.snackbar(
                           'Error',
@@ -265,7 +266,7 @@ class _ChecklistPageState extends State<ChecklistPage> {
                     height: 170,
                     width: double.infinity,
                     alignment: Alignment.center,
-                    padding: const EdgeInsets.all(12),
+                    padding: EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       gradient: AppColors.primaryGradient,
                       borderRadius: BorderRadius.circular(12),
@@ -274,29 +275,26 @@ class _ChecklistPageState extends State<ChecklistPage> {
                       'assets/images/islandsImages/island${log.islandPath}.png',
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
 
                   // total karbon
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 8,
-                      horizontal: 16,
-                    ),
+                    padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                     decoration: BoxDecoration(
                       color: getCarbonColor(log.carbonLevel),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      "Your Total Carbon Is ${log.totalCarbon} kgCO₂",
-                      style: const TextStyle(
+                      "Total Net Carbon Emission is ${log.totalCarbon} kgCO₂",
+                      style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
-                  const SizedBox(height: 25),
+                  SizedBox(height: 25),
 
                   // perbandingan lucu
                   Column(
@@ -316,20 +314,45 @@ class _ChecklistPageState extends State<ChecklistPage> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 50),
+                  SizedBox(height: 30),
+
+                  // EMISSION DISTRIBUTION TITLE
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "Emission Distribution by Activity",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                  ),
+
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "Category based view. Reductions only affect their own category, unlike Net Carbon Emission which applies reductions globally.",
+                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
+                  ),
+                  SizedBox(height: 30),
 
                   // grafik diganti teks
-                  Container(
-                    height: 150,
-                    width: 150,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      shape: BoxShape.circle,
-                    ),
-                    alignment: Alignment.center,
-                    child: const Text("grafik", style: TextStyle(fontSize: 16)),
-                  ),
-                  const SizedBox(height: 50),
+                  Obx(() {
+                    if (carbonLogController.todayLog.value != null) {
+                      final categoryData = carbonLogController
+                          .calculateCarbonDistribution(
+                            carbonLogController.todayLog.value!,
+                          );
+
+                      return CarbonDonutChart(data: categoryData);
+                    } else {
+                      return SizedBox();
+                    }
+                  }),
+
+                  SizedBox(height: 50),
                 ],
               ),
             ),
@@ -337,7 +360,7 @@ class _ChecklistPageState extends State<ChecklistPage> {
             // TODAY GOALS COMPLETION TITLE
             Padding(
               padding: EdgeInsetsGeometry.symmetric(horizontal: 20),
-              child: const Align(
+              child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
                   "Today Goals Completion",
@@ -350,15 +373,26 @@ class _ChecklistPageState extends State<ChecklistPage> {
               ),
             ),
 
-            const SizedBox(height: 12),
+            Padding(
+              padding: EdgeInsetsGeometry.symmetric(horizontal: 20),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "You've completed x goals, x pts added to your account",
+                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                ),
+              ),
+            ),
+
+            SizedBox(height: 12),
 
             // TODAY GOALS COMPLETION CARDS
             SizedBox(
               height: 70,
               child: ListView(
                 scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                children: const [
+                padding: EdgeInsets.symmetric(horizontal: 8),
+                children: [
                   GoalCard(
                     text: 'Traveling by bicycle, walk or public transportation',
                     showCarbonSaved: true,
@@ -388,10 +422,10 @@ class _ChecklistPageState extends State<ChecklistPage> {
 
             // NEXT GOALS TITLE
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 children: [
-                  const Row(
+                  Row(
                     children: [
                       Icon(Icons.auto_awesome, color: AppColors.primary),
                       SizedBox(width: 8),
@@ -424,8 +458,8 @@ class _ChecklistPageState extends State<ChecklistPage> {
               height: 70,
               child: ListView(
                 scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                children: const [
+                padding: EdgeInsets.symmetric(horizontal: 8),
+                children: [
                   GoalCard(
                     text: 'Traveling by bicycle, walk or public transportation',
                     showCarbonSaved: true,
@@ -450,7 +484,7 @@ class _ChecklistPageState extends State<ChecklistPage> {
                 ],
               ),
             ),
-            const SizedBox(height: 70),
+            SizedBox(height: 70),
           ],
         ),
       ),

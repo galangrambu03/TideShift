@@ -21,7 +21,7 @@ class ChecklistController extends GetxController {
 
     _dailyCarbonLogController.todayLog.refresh();
   }
-
+  
   // list of carbon variables questions content
   final carbonVariables = <ChecklistItem>[
     ChecklistItem(
@@ -73,7 +73,7 @@ class ChecklistController extends GetxController {
           "Did you use a tumbler or reusable container instead of a disposable one?",
       type: ChecklistType.boolean,
       value: false.obs,
-      factor: -2.0,
+      factor: -0.2, // sesuaikan ke -0.2
       iconName: 'local_drink',
     ),
     ChecklistItem(
@@ -122,48 +122,6 @@ class ChecklistController extends GetxController {
       if (item.value is RxInt) item.value.value = 0;
       if (item.value is RxDouble) item.value.value = 0.0;
     }
-  }
-  
-  //Function to calculate value of carbon by each categories
-  Map<String, double> getCarbonByCategory() {
-    final transport =
-        (carbonVariables[9].value.value as double) *
-            carbonVariables[9].factor + // carTravelKm
-        (carbonVariables[4].value.value ? 1 : 0) *
-            carbonVariables[4].factor; // noDriving
-
-    final food =
-        (carbonVariables[0].value.value ? 1 : 0) *
-            carbonVariables[0].factor + // packagedFood
-        (carbonVariables[5].value.value ? 1 : 0) *
-            carbonVariables[5].factor + // plantMealThanMeat
-        (carbonVariables[2].value.value ? 1 : 0) *
-            carbonVariables[2].factor; // wasteFood
-
-    final energy =
-        (carbonVariables[11].value.value as int) *
-            carbonVariables[11].factor + // electronicDeviceTimeHours
-        (carbonVariables[10].value.value as int) *
-            carbonVariables[10].factor + // showerTimeMinutes
-        (carbonVariables[3].value.value ? 1 : 0) *
-            carbonVariables[3].factor + // airConditioningHeating
-        (carbonVariables[7].value.value ? 1 : 0) *
-            carbonVariables[7].factor; // saveEnergy
-
-    final lifestyle =
-        (carbonVariables[6].value.value ? 1 : 0) *
-            carbonVariables[6].factor + // useTumbler
-        (carbonVariables[8].value.value ? 1 : 0) *
-            carbonVariables[8].factor + // separateRecycleWaste
-        (carbonVariables[1].value.value ? 1 : 0) *
-            carbonVariables[1].factor; // onlineShopping
-
-    return {
-      'Transport': double.parse(transport.toStringAsFixed(2)),
-      'Food': double.parse(food.toStringAsFixed(2)),
-      'Energy': double.parse(energy.toStringAsFixed(2)),
-      'Lifestyle': double.parse(lifestyle.toStringAsFixed(2)),
-    };
   }
 
   // Function to save data to database and calculate goals (goals saved in dailyCarbonController)

@@ -1,6 +1,9 @@
+import 'dart:math';
+
 import 'package:ecomagara/datasource/models/DailyCarbonLogModel.dart';
 import 'package:ecomagara/datasource/models/FuzzyModel.dart';
 import 'package:ecomagara/domain/repositories/dailyCarbonLog_repository.dart';
+import 'package:ecomagara/presentation/pages/main/mainChecklist/checklist_controller.dart';
 import 'package:get/get.dart';
 
 class DailyCarbonLogController extends GetxController {
@@ -92,5 +95,41 @@ class DailyCarbonLogController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  Map<String, double> calculateCarbonDistribution(CarbonLogModel log) {
+    // transport
+    double transport = log.carTravelKm * 0.21;
+    transport += (log.noDriving ? -1.0 : 0.0);
+    transport = max(0, transport);
+
+    // food
+    double food = 0.0;
+    food += (log.packagedFood ? 0.5 : 0.0);
+    food += (log.wasteFood ? 0.9 : 0.0);
+    food += (log.plantMealThanMeat ? -2.0 : 0.0);
+    food = max(0, food);
+
+    // energy
+    double energy = 0.0;
+    energy += log.electronicTimeHours * 0.06;
+    energy += log.showerTimeMinutes * 0.05;
+    energy += (log.airConditioningHeating ? 1.5 : 0.0);
+    energy += (log.saveEnergy ? -0.3 : 0.0);
+    energy = max(0, energy);
+
+    // lifestyle
+    double lifestyle = 0.0;
+    lifestyle += (log.onlineShopping ? 1.0 : 0.0);
+    lifestyle += (log.useTumbler ? -0.2 : 0.0);
+    lifestyle += (log.separateRecycleWaste ? -0.7 : 0.0);
+    lifestyle = max(0, lifestyle);
+    
+    return {
+      'Transport': transport,
+      'Food': food,
+      'Energy': energy,
+      'Lifestyle': lifestyle,
+    };
   }
 }

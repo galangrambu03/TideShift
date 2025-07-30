@@ -18,13 +18,16 @@ class AuthController extends GetxController {
     super.onInit();
     user.value = FirebaseAuth.instance.currentUser;
     if (user.value != null) {
-    // pengguna masih login, bisa langsung sync
-    userController.fetchUserProfile().then((_) {
-      isSync.value = true;
-    }).catchError((_) {
-      isSync.value = false;
-    });
-  }
+      // pengguna masih login, bisa langsung sync
+      userController
+          .fetchUserProfile()
+          .then((_) {
+            isSync.value = true;
+          })
+          .catchError((_) {
+            isSync.value = false;
+          });
+    }
   }
 
   bool get isLoggedIn => user.value != null;
@@ -64,14 +67,28 @@ class AuthController extends GetxController {
     try {
       isLoading.value = true;
       isSync.value = false;
+
       // 1. Login to Firebase auth
       await firebaseAuthService.login(email, password);
-      // 2. Fetch user data after login
-      await userController.fetchUserProfile();
       user.value = FirebaseAuth.instance.currentUser;
+
+      // 2. Coba fetch user data
+      await userController.fetchUserProfile();
       isSync.value = true;
     } catch (e) {
-      isSync.value = false;
+      // kalau gagal fetch user (mungkin user belum ada di DB)
+      if (user.value != null) {
+        final username =
+            user.value!.displayName ?? user.value!.email!.split("@")[0];
+        final profilePicture =
+            user.value!.photoURL ?? "assets/images/profilePictures/default.png";
+
+        await userController.syncUserData(username, profilePicture);
+        await userController.fetchUserProfile();
+        isSync.value = true;
+      } else {
+        isSync.value = false;
+      }
       rethrow;
     } finally {
       isLoading.value = false;

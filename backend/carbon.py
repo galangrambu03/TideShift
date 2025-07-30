@@ -8,19 +8,22 @@ from datetime import datetime, timedelta
 
 # Emission factors for different activities (kg CO2)
 EMISSION_FACTORS = {
-    'carTravelKm': 0.21,           # kg CO2 per km
-    'packagedFood': 0.5,           # kg CO2 per day if true
-    'showerTimeMinutes': 0.05,     # kg CO2 per minute
-    'electronicTimeHours': 0.15,   # kg CO2 per hour
-    'onlineShopping': 1.0,         # kg CO2 per day if true
-    'wasteFood': 0.9,              # kg CO2 per day if true
-    'airConditioningHeating': 1.0, # kg CO2 per day if true
-    'noDriving': -1.0,             # kg CO2 saved per day if true
-    'plantMealThanMeat': -0.8,     # kg CO2 saved per day if true
-    'useTumbler': -0.2,            # kg CO2 saved per day if true
-    'saveEnergy': -0.3,            # kg CO2 saved per day if true
-    'separateRecycleWaste': -0.5   # kg CO2 saved per day if true
+    'carTravelKm': 0.21,
+    'packagedFood': 0.5,
+    'showerTimeMinutes': 0.05,
+    'electronicTimeHours': 0.06,
+    'onlineShopping': 1.0,
+    'wasteFood': 0.9,
+    'airConditioningHeating': 1.5,
+
+    # Saved if true
+    'noDriving': -1.0,
+    'plantMealThanMeat': -2.0,
+    'useTumbler': -0.2,
+    'saveEnergy': -0.3,
+    'separateRecycleWaste': -0.7
 }
+
 
 # Category mapping for emission levels
 CATEGORY_MAPPING = {
@@ -38,6 +41,7 @@ DEFAULT_VALUES = {
     'electronicTimeHours': 8
 }
 
+
 def calculate_carbon_emissions(payload):
     """
     Calculate total carbon emissions from user activities
@@ -48,20 +52,23 @@ def calculate_carbon_emissions(payload):
     Returns:
         float: Total carbon emissions in kg CO2
     """
-    total_emissions = 0
-    
+    negative_emissions = 0
+    positive_reductions = 0
+
     for activity, factor in EMISSION_FACTORS.items():
         value = payload.get(activity, 0)
-        
         if isinstance(value, bool):
-            # For boolean activities, apply factor if True
             if value:
-                total_emissions += factor
+                if factor < 0:
+                    positive_reductions += abs(factor)
+                else:
+                    negative_emissions += factor
         else:
-            # For numeric activities, multiply by factor
-            total_emissions += float(value) * factor
-    
-    return max(0, total_emissions)  # Ensure non-negative
+            negative_emissions += float(value) * factor
+
+    total_emissions = max(0, negative_emissions - positive_reductions)
+    return total_emissions
+
 
 def classify_level(total_emission):
     """
