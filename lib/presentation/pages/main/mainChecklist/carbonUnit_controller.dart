@@ -12,4 +12,8 @@ class CarbonUnitController extends GetxController {
     final label = await repository.getRandomHumorLabel(totalCarbon);
     humorText.value = label;
   }
+
+   void clear() {
+    humorText.value = '';
+  }
 }

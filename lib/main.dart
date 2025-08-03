@@ -3,13 +3,16 @@ import 'package:ecomagara/config/config.dart';
 import 'package:ecomagara/datasource/local/carbonUnit.dart';
 import 'package:ecomagara/datasource/local/unique_fact.dart';
 import 'package:ecomagara/datasource/remote/dailyCarbonLog_remote.dart';
+import 'package:ecomagara/datasource/remote/dailyGoalsLog_remote.dart';
 import 'package:ecomagara/datasource/remote/user_remote.dart';
 import 'package:ecomagara/datasource/repositories/carbonLog_impl.dart';
 import 'package:ecomagara/datasource/repositories/carbonUnit_impl.dart';
 import 'package:ecomagara/datasource/repositories/fact_impl.dart';
+import 'package:ecomagara/datasource/repositories/goalsLog_impl.dart';
 import 'package:ecomagara/datasource/repositories/user_impl.dart';
 import 'package:ecomagara/datasource/services/firebaseAuthServices.dart';
 import 'package:ecomagara/domain/repositories/dailyCarbonLog_repository.dart';
+import 'package:ecomagara/domain/repositories/dailyGoals_repository.dart';
 import 'package:ecomagara/domain/repositories/fact_repository.dart';
 import 'package:ecomagara/domain/repositories/user_repostitory.dart';
 import 'package:ecomagara/presentation/pages/auth/SignupPage/signUp_controller.dart';
@@ -19,6 +22,7 @@ import 'package:ecomagara/presentation/pages/auth/loginPage/login_controller.dar
 import 'package:ecomagara/presentation/pages/main/mainChecklist/carbonUnit_controller.dart';
 import 'package:ecomagara/presentation/pages/main/mainChecklist/checklist_controller.dart';
 import 'package:ecomagara/presentation/pages/main/mainChecklist/checklist_page.dart';
+import 'package:ecomagara/presentation/pages/main/mainChecklist/dailyGoals_controller.dart';
 import 'package:ecomagara/presentation/pages/main/mainDisaster/disaster_page.dart';
 import 'package:ecomagara/presentation/pages/main/mainDiy/diy_page.dart';
 import 'package:ecomagara/presentation/pages/main/mainHome/calendar_controller.dart';
@@ -53,6 +57,11 @@ Future<void> main() async {
     ),
     fenix: true,
   );
+  Get.lazyPut<DailyGoalsRepository>(
+    () => DailyGoalsRepositoryImpl(
+      remoteDataSource: DailyGoalsRemoteDataSource(),
+    ), fenix: true
+  );
 
   // CONTROLLERS
   Get.lazyPut(() => FirebaseAuthService(), fenix: true);
@@ -70,6 +79,10 @@ Future<void> main() async {
   Get.put(NavigationController(), permanent: true);
   Get.lazyPut(() => ChecklistController(), fenix: true);
   Get.lazyPut(
+    () => DailyGoalsController(repository: Get.find<DailyGoalsRepository>()),
+    fenix: true,
+  );
+  Get.lazyPut(
     () => CarbonUnitController(
       repository: CarbonUnitRepositoryImpl(
         dataSource: CarbonUnitLocalDataSource(),
@@ -77,7 +90,7 @@ Future<void> main() async {
     ),
     fenix: true,
   );
-  
+
   runApp(const MyApp());
 }
 

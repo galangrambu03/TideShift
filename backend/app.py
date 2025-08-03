@@ -3,7 +3,8 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func, desc
 from firebase_config import *
 from auth_decorator import firebase_required
-from models import db, User, DailyCarbonLog
+from datetime import date, timedelta
+from models import DailyGoalsLog, db, User, DailyCarbonLog
 from carbon import (
     EMISSION_FACTORS,
     CATEGORY_MAPPING,
@@ -109,9 +110,6 @@ def leaderboard():
 # ============================
 # ROUTE: Submit Checklist
 # ============================
-
-from datetime import date, timedelta
-
 @app.route('/submit-checklist', methods=['POST'])
 @firebase_required
 def submit_checklist():
@@ -130,38 +128,19 @@ def submit_checklist():
         DailyCarbonLog.logDate >= thirty_days_ago
     ).all()
 
-    print("DEBUG: historical_logs =", len(historical_logs))
-
     car_km = float(payload.get('carTravelKm', 0))
     shower_min = float(payload.get('showerTimeMinutes', 0))
     electronic_hours = float(payload.get('electronicTimeHours', 0))
 
     normal_values = CarbonFuzzySystem.calculate_normal_values(historical_logs)
-    print("DEBUG: normal_values =", normal_values)
-
     fuzzy_analysis = CarbonFuzzySystem.fuzzy_system_analysis(
         car_km, shower_min, electronic_hours, normal_values
     )
-    print("DEBUG: fuzzy_analysis =", fuzzy_analysis)
 
     improvement_suggestions = generate_improvement_suggestions(payload)
-    print("DEBUG: improvement_suggestions =", improvement_suggestions)
 
-    current_main_emissions = (
-        car_km * EMISSION_FACTORS['carTravelKm'] +
-        shower_min * EMISSION_FACTORS['showerTimeMinutes'] +
-        electronic_hours * EMISSION_FACTORS['electronicTimeHours']
-    )
-
-    suggested_emissions = (
-        fuzzy_analysis['suggestions']['carTravelKm'] * EMISSION_FACTORS['carTravelKm'] +
-        fuzzy_analysis['suggestions']['showerTimeMinutes'] * EMISSION_FACTORS['showerTimeMinutes'] +
-        fuzzy_analysis['suggestions']['electronicTimeHours'] * EMISSION_FACTORS['electronicTimeHours']
-    )
-
-    potential_savings = max(0, current_main_emissions - suggested_emissions)
-
-    log = DailyCarbonLog(
+    # simpan log utama
+    daily_log = DailyCarbonLog(
         usersId=user.id,
         totalCarbon=round(float(total_kg), 2),
         carbonLevel=level,
@@ -174,31 +153,133 @@ def submit_checklist():
             for key in EMISSION_FACTORS.keys()
         }
     )
+    db.session.add(daily_log)
 
-    db.session.add(log)
+    # simpan goals (fuzzy dan improvement)
+    goals_log = DailyGoalsLog(
+        usersId=user.id,
+        logDate=date.today(),
+        # Numeric activities
+        carTravelKmGoal=fuzzy_analysis['suggestions']['carTravelKm'],
+        showerTimeMinutesGoal=fuzzy_analysis['suggestions']['showerTimeMinutes'],
+        electronicTimeHoursGoal=fuzzy_analysis['suggestions']['electronicTimeHours'],
+        # Negative checklist activities
+        packagedFoodGoal=1 if 'packagedFood' in improvement_suggestions else 0,
+        onlineShoppingGoal=1 if 'onlineShopping' in improvement_suggestions else 0,
+        wasteFoodGoal=1 if 'wasteFood' in improvement_suggestions else 0,
+        airConditioningHeatingGoal=1 if 'airConditioningHeating' in improvement_suggestions else 0,
+        # Positive checklistactivities
+        noDrivingGoal=1 if not 'noDriving' in improvement_suggestions else 0,
+        plantMealThanMeatGoal=1 if not 'plantMealThanMeat' in improvement_suggestions else 0,
+        useTumblerGoal=1 if not 'useTumbler' in improvement_suggestions else 0,
+        saveEnergyGoal=1 if not 'saveEnergy' in improvement_suggestions else 0,
+        separateRecycleWasteGoal=1 if not 'separateRecycleWaste' in improvement_suggestions else 0,
+
+        suggestions=fuzzy_analysis['suggestions'],
+        improvement_suggestions=improvement_suggestions
+    )
+    db.session.add(goals_log)
+
     db.session.commit()
 
     return jsonify({
         'totalcarbon': round(total_kg, 2),
         'carbonLevel': level,
         'emission_category': get_emission_category(level),
-        'fuzzy_analysis': {
-            'suggestions': {
-                'carTravelKm': round(fuzzy_analysis['suggestions']['carTravelKm'], 1),
-                'showerTimeMinutes': round(fuzzy_analysis['suggestions']['showerTimeMinutes'], 1),
-                'electronicTimeHours': round(fuzzy_analysis['suggestions']['electronicTimeHours'], 1)
-            },
-            'potential_savings': round(potential_savings, 2),
-            'normal_values': {
-                'carTravelKm': round(normal_values['carTravelKm'], 1),
-                'showerTimeMinutes': round(normal_values['showerTimeMinutes'], 1),
-                'electronicTimeHours': round(normal_values['electronicTimeHours'], 1)
-            }
-        },
+        'fuzzy_analysis': fuzzy_analysis,
         'improvement_suggestions': improvement_suggestions,
         'historical_data_points': len(historical_logs)
     }), 201
 
+
+# ============================
+# ROUTE: Fecth latest goals
+# ============================
+@app.route('/latest-goals', methods=['GET'])
+@firebase_required
+def get_latest_goals():
+    user = User.query.filter_by(firebase_uid=request.user_uid).first()
+
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
+
+    latest_goals = DailyGoalsLog.query \
+        .filter_by(usersId=user.id) \
+        .order_by(DailyGoalsLog.logDate.desc()) \
+        .first()
+
+    if not latest_goals:
+        return jsonify({'message': 'No goal log found'}), 404
+
+    combined_goals = []
+
+    # ===== Numeric Goals =====
+    numeric_definitions = [
+        {
+            'field': 'carTravelKmGoal',
+            'title': 'Try limit your vehicle usage to',
+            'unit': 'km'
+        },
+        {
+            'field': 'showerTimeMinutesGoal',
+            'title': 'Try limit your showers time to',
+            'unit': 'minutes'
+        },
+        {
+            'field': 'electronicTimeHoursGoal',
+            'title': 'Try reduce your screen time to',
+            'unit': 'hours'
+        }
+    ]
+
+    for item in numeric_definitions:
+        value = getattr(latest_goals, item['field'])
+        if value is not None:
+            combined_goals.append({
+                'type': 'numeric',
+                'field': item['field'],
+                'title': item['title'],
+                'value': value,
+                'unit': item['unit']
+            })
+
+    # ===== Negative Checklist Goals (if value == 0 → needs improvement) =====
+    negative_fields = {
+        'packagedFoodGoal': 'Eat unpackaged or fresh food',
+        'onlineShoppingGoal': 'Limit online shopping habits',
+        'wasteFoodGoal': 'Avoid food waste',
+        'airConditioningHeatingGoal': 'Reduce air conditioning or heating usage'
+    }
+
+    for field, title in negative_fields.items():
+        if getattr(latest_goals, field) == 0:
+            combined_goals.append({
+                'type': 'negative',
+                'field': field,
+                'title': title
+            })
+
+    # ===== Positive Checklist Goals (if value == 1 → encourage to start doing) =====
+    positive_fields = {
+        'noDrivingGoal': 'Use environmentally friendly transportation',
+        'plantMealThanMeatGoal': 'Eat more plant based meals',
+        'useTumblerGoal': 'Bring your own tumbler or reusable bottle',
+        'saveEnergyGoal': 'Practice energy saving at home',
+        'separateRecycleWasteGoal': 'Separate waste for recycling'
+    }
+
+    for field, title in positive_fields.items():
+        if getattr(latest_goals, field) == 1:
+            combined_goals.append({
+                'type': 'positive',
+                'field': field,
+                'title': title
+            })
+
+    return jsonify({
+        'goals': combined_goals,
+        'logDate': latest_goals.logDate.isoformat()
+    }), 200
 
 # ============================
 # ROUTE: Check Today's Submission

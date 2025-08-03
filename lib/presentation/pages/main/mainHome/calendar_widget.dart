@@ -55,7 +55,7 @@ class KalenderBergambar extends StatelessWidget {
 
         // Calendar section
         SizedBox(
-          height: 360,
+          height: 410,
           child: PageView.builder(
             reverse: true,
             controller: controller.pageController,

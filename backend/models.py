@@ -61,3 +61,31 @@ class DailyCarbonLog(db.Model):
             "separateRecycleWaste": self.separateRecycleWaste,
             "logDate": self.logDate.isoformat() if self.logDate else None
         }
+
+class DailyGoalsLog(db.Model):
+    __tablename__ = 'dailyGoalsLogs'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    usersId = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    logDate = db.Column(db.Date, nullable=False)
+
+    # goal values (numeric)
+    carTravelKmGoal = db.Column(db.Float, nullable=True)
+    showerTimeMinutesGoal = db.Column(db.Float, nullable=True)
+    electronicTimeHoursGoal = db.Column(db.Float, nullable=True)
+
+    # improvement (boolean flags)
+    packagedFoodGoal = db.Column(db.Boolean, nullable=True)
+    onlineShoppingGoal = db.Column(db.Boolean, nullable=True)
+    wasteFoodGoal = db.Column(db.Boolean, nullable=True)
+    airConditioningHeatingGoal = db.Column(db.Boolean, nullable=True)
+    noDrivingGoal = db.Column(db.Boolean, nullable=True)
+    plantMealThanMeatGoal = db.Column(db.Boolean, nullable=True)
+    useTumblerGoal = db.Column(db.Boolean, nullable=True)
+    saveEnergyGoal = db.Column(db.Boolean, nullable=True)
+    separateRecycleWasteGoal = db.Column(db.Boolean, nullable=True)
+
+    # optional debug info
+    suggestions = db.Column(db.JSON, nullable=True)  # simpan detail fuzzy
+    improvement_suggestions = db.Column(db.JSON, nullable=True)  # simpan detail improvement
+

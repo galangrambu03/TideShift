@@ -1,4 +1,3 @@
-// data/models/daily_carbon_log_model.dart
 class CarbonLogModel {
   final int id;
   final int usersId;
@@ -42,6 +41,13 @@ class CarbonLogModel {
     required this.separateRecycleWaste,
   });
 
+  static bool _parseBool(dynamic value) {
+    if (value is bool) return value;
+    if (value is int) return value == 1;
+    if (value is String) return value == "1" || value.toLowerCase() == "true";
+    return false;
+  }
+
   factory CarbonLogModel.fromJson(Map<String, dynamic> json) {
     return CarbonLogModel(
       id: json['id'],
@@ -52,17 +58,17 @@ class CarbonLogModel {
       islandPath: json['IslandPath'],
       carbonSaved: json['carbonSaved'],
       carTravelKm: (json['carTravelKm'] as num).toDouble(),
-      packagedFood: json['packagedFood'] == 1,
+      packagedFood: _parseBool(json['packagedFood']),
       showerTimeMinutes: json['showerTimeMinutes'],
       electronicTimeHours: json['electronicTimeHours'],
-      onlineShopping: json['onlineShopping'] == 1,
-      wasteFood: json['wasteFood'] == 1,
-      airConditioningHeating: json['airConditioningHeating'] == 1,
-      noDriving: json['noDriving'] == 1,
-      plantMealThanMeat: json['plantMealThanMeat'] == 1,
-      useTumbler: json['useTumbler'] == 1,
-      saveEnergy: json['saveEnergy'] == 1,
-      separateRecycleWaste: json['separateRecycleWaste'] == 1,
+      onlineShopping: _parseBool(json['onlineShopping']),
+      wasteFood: _parseBool(json['wasteFood']),
+      airConditioningHeating: _parseBool(json['airConditioningHeating']),
+      noDriving: _parseBool(json['noDriving']),
+      plantMealThanMeat: _parseBool(json['plantMealThanMeat']),
+      useTumbler: _parseBool(json['useTumbler']),
+      saveEnergy: _parseBool(json['saveEnergy']),
+      separateRecycleWaste: _parseBool(json['separateRecycleWaste']),
     );
   }
 

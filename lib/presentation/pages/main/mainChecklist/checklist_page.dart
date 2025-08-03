@@ -2,12 +2,14 @@ import 'package:ecomagara/config/colors.dart';
 import 'package:ecomagara/datasource/models/ChecklistItemModel.dart';
 import 'package:ecomagara/functions/getCarbonColor_switch.dart';
 import 'package:ecomagara/presentation/pages/main/mainChecklist/carbonUnit_controller.dart';
+import 'package:ecomagara/presentation/pages/main/mainChecklist/dailyGoals_controller.dart';
 import 'package:ecomagara/presentation/pages/main/mainHome/carbonLog_controller.dart';
 import 'package:ecomagara/presentation/widgets/defaultButton.dart';
 import 'package:ecomagara/presentation/widgets/donutChart.dart';
 import 'package:ecomagara/presentation/widgets/goalCard.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'checklist_controller.dart';
 
 class ChecklistPage extends StatefulWidget {
@@ -19,6 +21,7 @@ class _ChecklistPageState extends State<ChecklistPage> {
   final controller = Get.put(ChecklistController());
   final DailyCarbonLogController carbonLogController = Get.find();
   final CarbonUnitController carbonUnitController = Get.find();
+  final DailyGoalsController dailyGoalsController = Get.find();
 
   @override
   void initState() {
@@ -53,7 +56,7 @@ class _ChecklistPageState extends State<ChecklistPage> {
       backgroundColor: AppColors.background,
       body: Obx(() {
         // Jika sudah submit hari ini
-        if (controller.isTodaySubmited.value) {
+        if (carbonLogController.isTodaySubmited.value) {
           return recapScreen();
         }
         // If not submit yet
@@ -202,24 +205,52 @@ class _ChecklistPageState extends State<ChecklistPage> {
                     onPressed: () async {
                       try {
                         await controller.saveChecklist(
-                          controller.carbonVariables[9].value.value as double,
-                          (controller.carbonVariables[0].value.value ? 1 : 0),
-                          controller.carbonVariables[10].value.value as int,
-                          controller.carbonVariables[11].value.value as int,
-                          (controller.carbonVariables[1].value.value ? 1 : 0),
-                          (controller.carbonVariables[2].value.value ? 1 : 0),
-                          (controller.carbonVariables[3].value.value ? 1 : 0),
-                          (controller.carbonVariables[4].value.value ? 1 : 0),
-                          (controller.carbonVariables[5].value.value ? 1 : 0),
-                          (controller.carbonVariables[6].value.value ? 1 : 0),
-                          (controller.carbonVariables[7].value.value ? 1 : 0),
-                          (controller.carbonVariables[8].value.value ? 1 : 0),
+                          controller
+                              .carbonVariables[9]
+                              .value
+                              .value, // carTravelKm
+                          controller.carbonVariables[0].value.value
+                              ? 1
+                              : 0, // packagedFood
+                          controller
+                              .carbonVariables[10]
+                              .value
+                              .value, // showerTimeMinutes
+                          controller
+                              .carbonVariables[11]
+                              .value
+                              .value, // electronicDeviceTimeHours
+                          controller.carbonVariables[6].value.value
+                              ? 1
+                              : 0, // onlineShopping
+                          controller.carbonVariables[2].value.value
+                              ? 1
+                              : 0, // wasteFood
+                          controller.carbonVariables[4].value.value
+                              ? 1
+                              : 0, // airConditioningHeating
+                          controller.carbonVariables[5].value.value
+                              ? 1
+                              : 0, // noDriving
+                          controller.carbonVariables[1].value.value
+                              ? 1
+                              : 0, // plantMealThanMeat
+                          controller.carbonVariables[7].value.value
+                              ? 1
+                              : 0, // useTumbler
+                          controller.carbonVariables[8].value.value
+                              ? 1
+                              : 0, // saveEnergy
+                          controller.carbonVariables[3].value.value
+                              ? 1
+                              : 0, // separateRecycleWaste
                         );
-                        _loadHumor();
+                        await dailyGoalsController.fetchGoals();
+                        _loadHumor(); // refresh humor
                       } catch (e) {
                         Get.snackbar(
                           'Error',
-                          'Failed to recap, try check your internet connection',
+                          'Failed to submit checklist. Please try again later.',
                         );
                       }
                     },
@@ -250,6 +281,14 @@ class _ChecklistPageState extends State<ChecklistPage> {
 
   // Recap Screen to use by user to see detail of their carbons
   Widget recapScreen() {
+    if (carbonLogController.todayLog.value == null) {
+      return Center(
+        child: LoadingAnimationWidget.progressiveDots(
+          color: AppColors.primary,
+          size: 30,
+        ),
+      );
+    }
     var log = carbonLogController.todayLog.value!;
 
     return SafeArea(
@@ -456,34 +495,70 @@ class _ChecklistPageState extends State<ChecklistPage> {
             // NEXT GOALS CARDS
             SizedBox(
               height: 70,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                padding: EdgeInsets.symmetric(horizontal: 8),
-                children: [
-                  GoalCard(
-                    text: 'Traveling by bicycle, walk or public transportation',
-                    showCarbonSaved: true,
-                    carbonSaved: '4',
-                    color: AppColors.surface,
-                    textColor: Colors.black87,
-                  ),
-                  GoalCard(
-                    text: 'Limit your showers time to 30 minutes today',
-                    showCarbonSaved: true,
-                    carbonSaved: '0.7',
-                    color: AppColors.surface,
-                    textColor: Colors.black87,
-                  ),
-                  GoalCard(
-                    text: 'Limit your car travel to 10 km today',
-                    showCarbonSaved: true,
-                    carbonSaved: '5',
-                    color: AppColors.surface,
-                    textColor: Colors.black87,
-                  ),
-                ],
-              ),
+              child: Obx(() {
+                if (dailyGoalsController.isLoading.value) {
+                  return Center(
+                    child: LoadingAnimationWidget.progressiveDots(
+                      color: AppColors.primary,
+                      size: 30,
+                    ),
+                  );
+                }
+
+                if (dailyGoalsController.goals.isEmpty) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: SizedBox(
+                      height: 70,
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          gradient: AppColors.primaryGradient,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Center(
+                          child: Text(
+                            "No new next goals today, you're doing great!",
+                            style: TextStyle(
+                              color: AppColors.surface,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            softWrap: true,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }
+
+                return ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  itemCount: dailyGoalsController.goals.length,
+                  itemBuilder: (context, index) {
+                    final goal = dailyGoalsController.goals[index];
+
+                    // Filter goal yang nilainya 0.0
+                    if (goal.value == 0.0) {
+                      return const SizedBox.shrink();
+                    }
+
+                    return GoalCard(
+                      text:
+                          goal.unit != null
+                              ? '${goal.title} ${goal.value} ${goal.unit}'
+                              : goal.title,
+                      showCarbonSaved: goal.value != null,
+                      carbonSaved: goal.value?.toStringAsFixed(1) ?? '',
+                      color: AppColors.surface,
+                      textColor: Colors.black87,
+                    );
+                  },
+                );
+              }),
             ),
+
             SizedBox(height: 70),
           ],
         ),

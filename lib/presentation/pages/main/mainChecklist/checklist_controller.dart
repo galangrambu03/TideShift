@@ -6,23 +6,20 @@ class ChecklistController extends GetxController {
   final DailyCarbonLogController _dailyCarbonLogController = Get.find();
   var isTodaySubmited = false.obs;
 
-  // Check user today submition when controller first inisialized
   @override
   void onInit() async {
     super.onInit();
 
-    // check if user already submit
+    // cek status submit saat inisialisasi
     await _dailyCarbonLogController.checkTodaySubmission();
     isTodaySubmited.value = _dailyCarbonLogController.isTodaySubmited.value;
 
     if (isTodaySubmited.value) {
       await _dailyCarbonLogController.fetchTodayLog();
     }
-
-    _dailyCarbonLogController.todayLog.refresh();
   }
-  
-  // list of carbon variables questions content
+
+  // daftar variabel checklist
   final carbonVariables = <ChecklistItem>[
     ChecklistItem(
       label: "Did you eat food packaged in plastic or vinyl?",
@@ -73,7 +70,7 @@ class ChecklistController extends GetxController {
           "Did you use a tumbler or reusable container instead of a disposable one?",
       type: ChecklistType.boolean,
       value: false.obs,
-      factor: -0.2, // sesuaikan ke -0.2
+      factor: -0.2,
       iconName: 'local_drink',
     ),
     ChecklistItem(
@@ -115,7 +112,7 @@ class ChecklistController extends GetxController {
     ),
   ];
 
-  // FUNCTION - reset value of checklist items
+  // reset checklist
   void reset() {
     for (var item in carbonVariables) {
       if (item.value is RxBool) item.value.value = false;
@@ -124,7 +121,7 @@ class ChecklistController extends GetxController {
     }
   }
 
-  // Function to save data to database and calculate goals (goals saved in dailyCarbonController)
+  // simpan checklist ke backend
   Future<void> saveChecklist(
     double carTravelKm,
     int packagedFood,
@@ -155,6 +152,24 @@ class ChecklistController extends GetxController {
     };
 
     await _dailyCarbonLogController.submitDailyChecklist(checklistData);
+    await _dailyCarbonLogController.checkTodaySubmission();
+    await _dailyCarbonLogController.fetchTodayLog();
+
+    // update status submit
     isTodaySubmited.value = _dailyCarbonLogController.isTodaySubmited.value;
+  }
+
+  Future<void> fetchChecklistStatus() async {
+    await _dailyCarbonLogController.checkTodaySubmission();
+    isTodaySubmited.value = _dailyCarbonLogController.isTodaySubmited.value;
+
+    if (isTodaySubmited.value) {
+      await _dailyCarbonLogController.fetchTodayLog();
+    }
+  }
+
+  void clear() {
+    reset();
+    isTodaySubmited.value = false;
   }
 }

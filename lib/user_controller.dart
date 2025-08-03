@@ -37,10 +37,7 @@ class UserController extends GetxController {
   Future<void> syncUserData(String name, String profilePic) async {
     try {
       isLoading.value = true;
-      await repository.syncUser(
-        username: name,
-        profilePicture: profilePic,
-      );
+      await repository.syncUser(username: name, profilePicture: profilePic);
     } catch (e) {
       Get.snackbar("Error", "Failed to sync user data: $e");
     } finally {
@@ -48,5 +45,8 @@ class UserController extends GetxController {
     }
   }
 
-  
+  void clear() {
+    userData.value = null; 
+    isLoading.value = false;
+  }
 }

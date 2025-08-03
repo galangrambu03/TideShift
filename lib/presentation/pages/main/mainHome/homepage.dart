@@ -1,6 +1,7 @@
 import 'package:ecomagara/config/colors.dart';
 import 'package:ecomagara/main.dart';
 import 'package:ecomagara/presentation/pages/main/mainChecklist/checklist_controller.dart';
+import 'package:ecomagara/presentation/pages/main/mainChecklist/dailyGoals_controller.dart';
 import 'package:ecomagara/presentation/pages/main/mainHome/calendar_widget.dart';
 import 'package:ecomagara/presentation/pages/main/mainHome/carbonLog_controller.dart';
 import 'package:ecomagara/presentation/pages/main/pointShop/shop_page.dart';
@@ -10,14 +11,31 @@ import 'package:ecomagara/presentation/widgets/goalCard.dart';
 import 'package:ecomagara/user_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
-class Homepage extends StatelessWidget {
-  final UserController userController = Get.find<UserController>();
-  final ChecklistController checklistController =
-      Get.find<ChecklistController>();
-  final DailyCarbonLogController carbonLogController = Get.find();
+class Homepage extends StatefulWidget {
 
   Homepage({super.key});
+
+  @override
+  State<Homepage> createState() => _HomepageState();
+}
+
+class _HomepageState extends State<Homepage> {
+  final UserController userController = Get.find<UserController>();
+
+  final ChecklistController checklistController =
+      Get.find<ChecklistController>();
+
+  final DailyCarbonLogController carbonLogController = Get.find();
+
+  final DailyGoalsController dailyGoalsController = Get.find();
+
+  @override
+  void initState() {
+    super.initState();
+    dailyGoalsController.fetchGoals();  // panggil di sini
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -143,36 +161,73 @@ class Homepage extends StatelessWidget {
 
             const SizedBox(height: 10),
 
-            SizedBox(
-              height: 70,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                children: const [
-                  GoalCard(
-                    text: 'Traveling by bicycle, walk or public transportation',
-                    showCarbonSaved: true,
-                    carbonSaved: '4',
-                    color: AppColors.surface,
-                    textColor: Colors.black87,
+            Obx(() {
+              final goals = dailyGoalsController.goals;
+              final logDate = dailyGoalsController.logDate.value;
+
+              if (dailyGoalsController.isLoading.value) {
+                return SizedBox(
+                  height: 70,
+                  child: Center(child: LoadingAnimationWidget.progressiveDots(
+                      color: AppColors.primary,
+                      size: 30,
+                    ),),
+                );
+              }
+
+              if (goals.isEmpty) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: SizedBox(
+                    height: 70,
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        gradient: logDate == null? AppColors.secondaryGradient: AppColors.primaryGradient,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Center(
+                        child: Text(
+                          logDate == null
+                              ? "Submit your first recap to receive daily goals!"
+                              : "No new next goals today, you're doing great!",
+                          style: TextStyle(color: AppColors.surface, fontWeight: FontWeight.bold),
+                          softWrap: true,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
                   ),
-                  GoalCard(
-                    text: 'Limit your showers time to 30 minutes today',
-                    showCarbonSaved: true,
-                    carbonSaved: '0.7',
-                    color: AppColors.surface,
-                    textColor: Colors.black87,
-                  ),
-                  GoalCard(
-                    text: 'Limit your car travel to 10 km today',
-                    showCarbonSaved: true,
-                    carbonSaved: '5',
-                    color: AppColors.surface,
-                    textColor: Colors.black87,
-                  ),
-                ],
-              ),
-            ),
+                );
+              }
+
+              return SizedBox(
+                height: 70,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  itemCount: goals.length,
+                  itemBuilder: (context, index) {
+                    final goal = goals[index];
+
+                    if (goal.value == 0.0) {
+                      return const SizedBox.shrink();
+                    }
+                    
+                    return GoalCard(
+                      text:
+                          goal.unit != null
+                              ? '${goal.title} ${goal.value} ${goal.unit}'
+                              : goal.title,
+                      showCarbonSaved: goal.value != null,
+                      carbonSaved: goal.value?.toStringAsFixed(1) ?? '',
+                      color: AppColors.surface,
+                      textColor: Colors.black87,
+                    );
+                  },
+                ),
+              );
+            }),
 
             const SizedBox(height: 24),
 

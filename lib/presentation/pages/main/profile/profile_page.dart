@@ -15,7 +15,7 @@ class ProfilePage extends StatelessWidget {
         child: ElevatedButton(
           child: Text('Logout'),
           onPressed: () {
-            _authController.signOut();
+            _authController.logout();
           },
         ),
       ),
