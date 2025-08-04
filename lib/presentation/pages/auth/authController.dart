@@ -117,9 +117,7 @@ class AuthController extends GetxController {
       await firebaseAuthService.logout();
       user.value = null;
 
-      // reset semua controller supaya data user sebelumnya hilang
       userController.clear();
-      // Get.find<CalendarController>().clear(); // opsional kalau ada method clear
       Get.find<ChecklistController>().reset();
       Get.find<CarbonUnitController>().clear();
       Get.find<DailyGoalsController>().clear();

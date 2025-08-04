@@ -1,12 +1,15 @@
 import 'package:ecomagara/config/colors.dart';
-import 'package:ecomagara/config/config.dart';
 import 'package:ecomagara/datasource/local/carbonUnit.dart';
+import 'package:ecomagara/datasource/local/disasterContent.dart';
+import 'package:ecomagara/datasource/local/diyContentDatasource.dart';
 import 'package:ecomagara/datasource/local/unique_fact.dart';
 import 'package:ecomagara/datasource/remote/dailyCarbonLog_remote.dart';
 import 'package:ecomagara/datasource/remote/dailyGoalsLog_remote.dart';
 import 'package:ecomagara/datasource/remote/user_remote.dart';
 import 'package:ecomagara/datasource/repositories/carbonLog_impl.dart';
 import 'package:ecomagara/datasource/repositories/carbonUnit_impl.dart';
+import 'package:ecomagara/datasource/repositories/disaster_impl.dart';
+import 'package:ecomagara/datasource/repositories/diy_impl.dart';
 import 'package:ecomagara/datasource/repositories/fact_impl.dart';
 import 'package:ecomagara/datasource/repositories/goalsLog_impl.dart';
 import 'package:ecomagara/datasource/repositories/user_impl.dart';
@@ -23,7 +26,9 @@ import 'package:ecomagara/presentation/pages/main/mainChecklist/carbonUnit_contr
 import 'package:ecomagara/presentation/pages/main/mainChecklist/checklist_controller.dart';
 import 'package:ecomagara/presentation/pages/main/mainChecklist/checklist_page.dart';
 import 'package:ecomagara/presentation/pages/main/mainChecklist/dailyGoals_controller.dart';
+import 'package:ecomagara/presentation/pages/main/mainDisaster/disaster_controller.dart';
 import 'package:ecomagara/presentation/pages/main/mainDisaster/disaster_page.dart';
+import 'package:ecomagara/presentation/pages/main/mainDiy/diy_controller.dart';
 import 'package:ecomagara/presentation/pages/main/mainDiy/diy_page.dart';
 import 'package:ecomagara/presentation/pages/main/mainHome/calendar_controller.dart';
 import 'package:ecomagara/presentation/pages/main/mainHome/carbonLog_controller.dart';
@@ -60,7 +65,8 @@ Future<void> main() async {
   Get.lazyPut<DailyGoalsRepository>(
     () => DailyGoalsRepositoryImpl(
       remoteDataSource: DailyGoalsRemoteDataSource(),
-    ), fenix: true
+    ),
+    fenix: true,
   );
 
   // CONTROLLERS
@@ -89,6 +95,12 @@ Future<void> main() async {
       ),
     ),
     fenix: true,
+  );
+  Get.lazyPut(
+    () => DiyController(repository: DiyRepositoryImpl(DiyLocalDataSource())), fenix: true
+  );
+  Get.lazyPut(
+    () => DisasterController(repository: DisasterImpl(DisasterLocalDatasource())), fenix: true
   );
 
   runApp(const MyApp());

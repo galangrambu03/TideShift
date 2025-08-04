@@ -1,0 +1,138 @@
+[
+  {
+    "id": "1",
+    "disasterNames": "Flood (Flash Flood)",
+    "description": "Flash floods are sudden and intense floods caused by heavy rainfall, dam breaks, or rapid snowmelt. They can occur within minutes and are extremely dangerous.",
+    "countries": ["Bangladesh", "India", "Indonesia", "Philippines", "United States"],
+    "image" : "assets/images/disasterImages/rfi_1.jpg",
+    "tips": [
+      "Immediately seek higher ground if you receive a flood alert or hear thunderous sounds of rushing water.",
+      "Never walk or drive through floodwaters. Six inches of water can knock you over, and one foot can sweep away your car.",
+      "Keep an emergency bag ready containing water, non-perishable food, flashlight, batteries, first aid kit, essential meds, and dry clothing.",
+      "Install water alarms in basements and flood-prone areas, and invest in sump pumps with battery backups.",
+      "Reinforce basement walls and seal cracks to prevent water seepage.",
+      "Create a family evacuation plan with designated meeting spots and communication backups.",
+      "Safeguard important documents in waterproof bags and also store them digitally in cloud services.",
+      "Participate in flood drills organized by the community and encourage neighbors to join for greater preparedness."
+    ]
+  },
+  {
+    "id": "2",
+    "disasterNames": "Drought",
+    "description": "Droughts are prolonged periods of low rainfall, resulting in water shortages, crop failures, and increased fire risk.",
+    "countries": ["Ethiopia", "Somalia", "Australia", "India", "United States"],
+    "image" : "assets/images/disasterImages/rfi_2.jpg",
+    "tips": [
+      "Turn off taps when not in use, fix all leaks promptly, and use low-flow fixtures to save water.",
+      "Reuse water from cooking or cleaning for irrigation where safe.",
+      "Plant native and drought-resistant vegetation to reduce water demand.",
+      "Mulch garden beds to retain soil moisture and reduce evaporation.",
+      "Practice dry farming techniques such as deep tilling and drip irrigation.",
+      "Encourage community rainwater harvesting initiatives using storage tanks and cisterns.",
+      "Limit lawn irrigation to early morning or late evening to minimize evaporation.",
+      "Stock up on potable water for all family members, including pets, for at least two weeks."
+    ]
+  },
+  {
+    "id": "3",
+    "disasterNames": "Hurricane",
+    "description": "Hurricanes are massive tropical storms with powerful winds, heavy rain, and storm surges that cause flooding and structural damage.",
+    "countries": ["United States", "Mexico", "Cuba", "Philippines", "Japan"],
+    "image" : "assets/images/disasterImages/rfi_3.jpg",
+    "tips": [
+      "Secure all outdoor furniture, trash bins, and loose objects that can become projectiles in high winds.",
+      "Stockpile at least three days’ worth of food, water, prescription drugs, hygiene supplies, and pet food.",
+      "Review your insurance policies and photograph your property before the storm hits.",
+      "Seal gaps in roofs, doors, and windows with weatherproofing materials.",
+      "Keep a paper list of emergency contact numbers in case phones are inoperable.",
+      "Evacuate immediately if ordered, and let someone know your destination and ETA.",
+      "Stay indoors in a small, windowless room during the storm and monitor updates via battery-powered radio.",
+      "Do not use generators indoors to avoid carbon monoxide poisoning."
+    ]
+  },
+  {
+    "id": "4",
+    "disasterNames": "Heatwave",
+    "description": "Heatwaves are prolonged periods of excessive heat that pose risks to human health, especially for the elderly, children, and those with chronic illnesses.",
+    "countries": ["India", "Pakistan", "Spain", "United States", "Australia"],
+    "image" : "assets/images/disasterImages/rfi_4.jpg",
+    "tips": [
+      "Schedule outdoor work or activities for early morning or late evening.",
+      "Stay in shaded or air-conditioned environments; use fans and wet cloths to cool the body.",
+      "Wear light, loose-fitting, and breathable clothing—preferably cotton or linen.",
+      "Check the heat index before going outdoors and avoid unnecessary exposure during peak hours.",
+      "Drink water every 15–30 minutes even if not thirsty. Avoid alcohol, coffee, and sugary drinks.",
+      "Use sunblock with SPF 30+ and wear wide-brimmed hats and sunglasses.",
+      "Check on elderly neighbors, babies, and pets frequently.",
+      "Learn symptoms of heat stroke and act immediately: confusion, dry skin, rapid pulse—seek medical help."
+    ]
+  },
+  {
+    "id": "5",
+    "disasterNames": "Wildfire",
+    "description": "Wildfires are uncontrolled fires that rapidly spread through forests, grasslands, and urban areas, often triggered by drought and extreme heat.",
+    "countries": ["United States", "Australia", "Greece", "Portugal", "Canada"],
+    "image" : "assets/images/disasterImages/rfi_5.jpg",
+    "tips": [
+      "Create a defensible space of at least 30 feet around your home by removing dry leaves, twigs, and flammable vegetation.",
+      "Install mesh screens on vents to prevent embers from entering buildings.",
+      "Keep flammable items such as firewood, propane tanks, and outdoor furniture away from your home walls.",
+      "Prepare an evacuation plan and keep your car fueled, with a go-bag always ready.",
+      "Stay informed through official alerts and be ready to evacuate early.",
+      "Wear N95 masks to protect from smoke inhalation during nearby fires.",
+      "Use fire-resistant landscaping (hardscaping) and materials in home construction where possible.",
+      "Practice fire drills with family and discuss different escape routes."
+    ]
+  },
+  {
+    "id": "6",
+    "disasterNames": "Glacial Melt Flood (GLOFs)",
+    "description": "Glacial lake outburst floods occur when natural dams holding glacial meltwater burst, sending massive volumes of water downstream unexpectedly.",
+    "countries": ["Nepal", "Bhutan", "Pakistan", "Peru", "Switzerland"],
+    "image" : "assets/images/disasterImages/rfi_6.jpg",
+    "tips": [
+      "Monitor glacial lake conditions through satellite maps or local agencies in mountainous regions.",
+      "Avoid camping, hiking, or building near glacial lakes or flood-prone valleys.",
+      "Support installation of early warning systems and sirens in vulnerable areas.",
+      "Learn the local evacuation routes and rehearse them with your group before hiking.",
+      "Work with communities to create disaster preparedness plans for glacial flood zones.",
+      "Raise awareness in schools and tour groups about GLOF dangers and signs.",
+      "Advocate for responsible glacial monitoring and dam reinforcement programs.",
+      "Do not cross bridges or riverbanks when there's visible water-level surges."
+    ]
+  },
+  {
+    "id": "7",
+    "disasterNames": "Sea Level Rise",
+    "description": "Sea level rise due to melting polar ice and thermal expansion threatens coastal communities with long-term flooding and saltwater intrusion.",
+    "countries": ["Maldives", "Bangladesh", "Indonesia", "Netherlands", "Kiribati"],
+    "image" : "assets/images/disasterImages/rfi_7.jpg",
+    "tips": [
+      "Avoid long-term property investments in low-lying coastal zones unless they are climate-adapted.",
+      "Build on elevated foundations or use floating structures where practical.",
+      "Promote and participate in coastal mangrove reforestation which helps buffer storm surges.",
+      "Install tide barriers or deploy sandbags during storm tides or king tides.",
+      "Have a long-term relocation plan if residing in vulnerable coastal communities.",
+      "Test drinking water sources regularly for saltwater contamination.",
+      "Promote resilient urban planning that includes raised roads and water drainage upgrades.",
+      "Support climate adaptation and advocacy groups for coastal resilience."
+    ]
+  },
+  {
+    "id": "8",
+    "disasterNames": "Severe Storms",
+    "description": "Severe storms, including tornadoes, derechos, and hailstorms, bring destructive winds, lightning, and structural damage over wide areas.",
+    "countries": ["United States", "Canada", "Australia", "China", "Philippines"],
+    "image" : "assets/images/disasterImages/rfi_8.jpg",
+    "tips": [
+      "Identify and prepare a storm shelter in your home, ideally an interior room with no windows.",
+      "Secure or bring indoors outdoor objects like bicycles, trash bins, and furniture.",
+      "Stay tuned to emergency weather alerts on NOAA radio or mobile apps.",
+      "Unplug electronics to prevent damage from lightning surges.",
+      "Avoid using corded phones or plumbing during lightning storms.",
+      "Protect your windows with storm shutters or thick plywood.",
+      "Practice storm drills with your family and teach children what to do if a warning is issued.",
+      "Document damages immediately after the storm and contact your insurance provider."
+    ]
+  }
+]

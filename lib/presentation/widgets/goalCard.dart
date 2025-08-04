@@ -1,4 +1,3 @@
-import 'package:ecomagara/config/colors.dart';
 import 'package:flutter/material.dart';
 
 class GoalCard extends StatelessWidget {

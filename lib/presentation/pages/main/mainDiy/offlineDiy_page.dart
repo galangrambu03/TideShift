@@ -1,12 +1,12 @@
 import 'package:ecomagara/config/colors.dart';
-import 'package:ecomagara/presentation/pages/main/mainDiy/diyDetail_page.dart';
+import 'package:ecomagara/presentation/pages/main/mainDiy/offline_diy.dart';
 import 'package:ecomagara/presentation/widgets/itemCard.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'diy_controller.dart';
 
-class DiyPage extends StatelessWidget {
-  DiyPage({super.key});
+class OfflineDiyPage extends StatelessWidget {
+  OfflineDiyPage({super.key});
   
   final DiyController controller = Get.find<DiyController>();
 
@@ -19,7 +19,6 @@ class DiyPage extends StatelessWidget {
           decoration: const BoxDecoration(gradient: AppColors.primaryGradient),
         ),
 
-        // scaffold transparan
         Scaffold(
           backgroundColor: Colors.transparent,
           appBar: AppBar(
@@ -49,7 +48,7 @@ class DiyPage extends StatelessWidget {
 
             return ListView.builder(
               padding: EdgeInsets.zero,
-              itemCount: diyItems.length + 1, // +1 untuk header
+              itemCount: diyItems.length + 1,
               itemBuilder: (context, index) {
                 if (index == 0) {
                   // header image
@@ -80,7 +79,7 @@ class DiyPage extends StatelessWidget {
                               .first, 
                       buttonText: 'Craft Item',
                       onPressed: () {
-                        Get.to(DiyDetailPage(diy: item));
+                        Get.to(OfflineDiyDetailPage(diy: item));
                       },
                     ),
                   );

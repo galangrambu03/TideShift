@@ -6,16 +6,15 @@ import 'package:ecomagara/presentation/widgets/itemCard.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class DisasterPage extends StatefulWidget {
-  const DisasterPage({super.key});
+class OfflineDisasterPage extends StatefulWidget {
+  const OfflineDisasterPage({super.key});
 
   @override
-  State<DisasterPage> createState() => _DisasterPageState();
+  State<OfflineDisasterPage> createState() => _OfflineDisasterPageState();
 }
 
-class _DisasterPageState extends State<DisasterPage> {
+class _OfflineDisasterPageState extends State<OfflineDisasterPage> {
   final DisasterController controller = Get.find<DisasterController>();
-  int selectedTab = 0; // 0 = indonesia, 1 = all region
 
   @override
   Widget build(BuildContext context) {
@@ -52,11 +51,7 @@ class _DisasterPageState extends State<DisasterPage> {
               );
             }
 
-            // filter by tab selected
-            final disasters =
-                selectedTab == 0
-                    ? controller.getDisastersPerCountry()
-                    : controller.disasters;
+            final List<DisasterModel> disasters = controller.disasters;
 
             return ListView(
               padding: EdgeInsets.zero,
@@ -69,60 +64,6 @@ class _DisasterPageState extends State<DisasterPage> {
                     'assets/images/decorationImages/disasterHeader.png',
                     fit: BoxFit.cover,
                   ),
-                ),
-
-                // tab button (indonesia / all region)
-                Row(
-                  children: [
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () => setState(() => selectedTab = 0),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          color:
-                              selectedTab == 0
-                                  ? const Color(0xFFFF6B35)
-                                  : AppColors.background,
-                          child: Center(
-                            child: Text(
-                              'Indonesia',
-                              style: TextStyle(
-                                color:
-                                    selectedTab == 0
-                                        ? Colors.white
-                                        : Colors.black,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () => setState(() => selectedTab = 1),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          color:
-                              selectedTab == 1
-                                  ? const Color(0xFFFF6B35)
-                                  : AppColors.surface,
-                          child: Center(
-                            child: Text(
-                              'All Region',
-                              style: TextStyle(
-                                color:
-                                    selectedTab == 1
-                                        ? Colors.white
-                                        : Colors.black,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
                 ),
                 const SizedBox(height: 15),
 

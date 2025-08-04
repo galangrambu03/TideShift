@@ -83,11 +83,38 @@ def get_profile():
     }), 200
 
 # ============================
+# ROUTE: Update Profile Picture
+# ============================
+@app.route('/me/profile-picture', methods=['PATCH'])
+@firebase_required
+def update_profile_picture():
+    """
+    Expects JSON: { "profilePicture": "<new-image-url>" }
+    Updates the current user's profilePicture and returns the updated profile.
+    """
+    data = request.get_json() or {}
+    new_url = data.get('profilePicture')
+    if not new_url:
+        return jsonify({'message': 'No profilePicture URL provided'}), 400
+
+    user = User.query.filter_by(firebase_uid=request.user_uid).first()
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
+
+    user.profilePicture = new_url
+    db.session.commit()
+
+    return jsonify({
+        'message': 'Profile picture updated',
+        'profilePicture': user.profilePicture
+    }), 200
+
+# ============================
 # ROUTE: Leaderboard
 # ============================
 @app.route('/leaderboard', methods=['GET'])
 @firebase_required
-def leaderboard():
+def leaderboard():  
     entries = (
         db.session.query(
             User.username,

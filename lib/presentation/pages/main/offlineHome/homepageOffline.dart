@@ -1,5 +1,7 @@
 import 'package:ecomagara/config/colors.dart';
 import 'package:ecomagara/main.dart';
+import 'package:ecomagara/presentation/pages/main/mainDisaster/offlineDisaster_page.dart';
+import 'package:ecomagara/presentation/pages/main/mainDiy/offlineDiy_page.dart';
 import 'package:ecomagara/presentation/widgets/defaultButton.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -68,7 +70,7 @@ class OfflineHomepage extends StatelessWidget {
                                     text: 'Login',
                                     onPressed: () {
                                       // Navigate to login page
-                                      Get.to(Main());
+                                      Get.offAll(Main());
                                     },
                                     color: AppColors.button2,
                                   ),
@@ -99,7 +101,7 @@ class OfflineHomepage extends StatelessWidget {
                 imagePath: 'assets/images/decorationImages/diyHeader.png',
                 title: 'DIY for Earth',
                 onPressed: () {
-                  // Navigate to DIY for Earth page
+                  Get.to(OfflineDiyPage());
                 },
               ),
               const SizedBox(height: 15),
@@ -109,7 +111,7 @@ class OfflineHomepage extends StatelessWidget {
                 imagePath: 'assets/images/decorationImages/disasterHeader.png',
                 title: 'Ready for Impact',
                 onPressed: () {
-                  // Navigate to Ready for Impact page
+                  Get.to(OfflineDisasterPage());
                 },
               ),
             ],
