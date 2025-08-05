@@ -8,6 +8,7 @@ import 'package:ecomagara/presentation/pages/main/mainHome/carbonLog_controller.
 import 'package:ecomagara/presentation/widgets/defaultButton.dart';
 import 'package:ecomagara/presentation/widgets/donutChart.dart';
 import 'package:ecomagara/presentation/widgets/goalCard.dart';
+import 'package:ecomagara/user_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -24,6 +25,7 @@ class _ChecklistPageState extends State<ChecklistPage> {
   final CarbonUnitController carbonUnitController = Get.find();
   final DailyGoalsController dailyGoalsController = Get.find();
   final GoalsAchievedController goalsAchievedController = Get.find();
+  final UserController userController = Get.find();
 
   @override
   void initState() {
@@ -250,7 +252,8 @@ class _ChecklistPageState extends State<ChecklistPage> {
 
                         await dailyGoalsController.fetchGoals();
                         await goalsAchievedController.fetchGoalsAchieved();
-                        _loadHumor(); // refresh humor
+                        await userController.fetchUserProfile();
+                        await _loadHumor(); // refresh humor
                       } catch (e) {
                         Get.snackbar(
                           'Error',
@@ -344,7 +347,6 @@ class _ChecklistPageState extends State<ChecklistPage> {
                   ),
                   const SizedBox(height: 25),
 
-                  // perbandingan lucu
                   Column(
                     children: [
                       Image.asset(
@@ -434,10 +436,7 @@ class _ChecklistPageState extends State<ChecklistPage> {
 
                   return Text(
                     "You've completed ${achievedGoals.length} goals, ${achievedGoals.length * 5} pts added to your account",
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey,
-                    ),
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
                   );
                 }),
               ),

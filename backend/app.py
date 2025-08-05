@@ -319,7 +319,7 @@ def check_goals_achieved():
 
     # cek apakah sudah pernah tambah poin hari ini
     points_earned_today = 0
-    if user.last_points_added_date != today:
+    if not user.last_points_added_date or user.last_points_added_date != today:
         if points_to_add > 0:
             user.points += points_to_add
             user.last_points_added_date = today

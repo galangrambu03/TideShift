@@ -3,6 +3,7 @@ import 'package:ecomagara/domain/repositories/user_repostitory.dart';
 import 'package:ecomagara/presentation/pages/main/mainChecklist/carbonUnit_controller.dart';
 import 'package:ecomagara/presentation/pages/main/mainChecklist/checklist_controller.dart';
 import 'package:ecomagara/presentation/pages/main/mainChecklist/dailyGoals_controller.dart';
+import 'package:ecomagara/presentation/pages/main/mainChecklist/goalsAchived_controller.dart';
 import 'package:ecomagara/presentation/pages/main/mainHome/carbonLog_controller.dart';
 import 'package:ecomagara/user_controller.dart';
 import 'package:get/get.dart';
@@ -122,6 +123,7 @@ class AuthController extends GetxController {
       Get.find<CarbonUnitController>().clear();
       Get.find<DailyGoalsController>().clear();
       Get.find<DailyCarbonLogController>().clear();
+      Get.find<GoalsAchievedController>().clear();
 
       isSync.value = false;
     } catch (e) {
