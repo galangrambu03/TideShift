@@ -18,6 +18,18 @@ class DailyCarbonLogController extends GetxController {
   var todayLog = Rxn<CarbonLogModel>();
   var recentLogs = Rxn<List<CarbonLogModel>>();
 
+  @override
+  void onInit() {
+    super.onInit();
+    fetchInitialData();
+  }
+
+  Future<void> fetchInitialData() async {
+    await checkTodaySubmission();
+    await fetchTodayLog();
+    await fetchRecentLogs();
+  }
+
   // Submit Daily Carbon Log and calculate total, next goals etc
   Future<void> submitDailyChecklist(Map<String, dynamic> checklistData) async {
     try {

@@ -1,5 +1,4 @@
 import 'package:ecomagara/datasource/models/disasterModel.dart';
-import 'package:ecomagara/datasource/models/disasterModel.dart';
 import 'package:flutter/material.dart';
 import 'package:ecomagara/config/colors.dart';
 
@@ -7,7 +6,7 @@ class DisasterDetailPage extends StatelessWidget {
   final DisasterModel disaster;
 
   const DisasterDetailPage({super.key, required this.disaster});
-
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,7 +19,7 @@ class DisasterDetailPage extends StatelessWidget {
         ),
         centerTitle: true,
         title: const Text(
-          'DIY For Earth',
+          'Ready For Impact',
           style: TextStyle(
             color: AppColors.primary,
             fontWeight: FontWeight.bold,

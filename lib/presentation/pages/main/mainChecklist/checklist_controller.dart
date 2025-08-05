@@ -1,9 +1,11 @@
 import 'package:ecomagara/datasource/models/ChecklistItemModel.dart';
+import 'package:ecomagara/presentation/pages/main/mainChecklist/goalsAchived_controller.dart';
 import 'package:ecomagara/presentation/pages/main/mainHome/carbonLog_controller.dart';
 import 'package:get/get.dart';
 
 class ChecklistController extends GetxController {
   final DailyCarbonLogController _dailyCarbonLogController = Get.find();
+  final GoalsAchievedController _goalsAchievedController = Get.find();
   var isTodaySubmited = false.obs;
 
   @override
@@ -16,6 +18,7 @@ class ChecklistController extends GetxController {
 
     if (isTodaySubmited.value) {
       await _dailyCarbonLogController.fetchTodayLog();
+      await _goalsAchievedController.fetchGoalsAchieved();
     }
   }
 

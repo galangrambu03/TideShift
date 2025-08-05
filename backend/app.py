@@ -88,10 +88,6 @@ def get_profile():
 @app.route('/me/profile-picture', methods=['PATCH'])
 @firebase_required
 def update_profile_picture():
-    """
-    Expects JSON: { "profilePicture": "<new-image-url>" }
-    Updates the current user's profilePicture and returns the updated profile.
-    """
     data = request.get_json() or {}
     new_url = data.get('profilePicture')
     if not new_url:
@@ -104,10 +100,8 @@ def update_profile_picture():
     user.profilePicture = new_url
     db.session.commit()
 
-    return jsonify({
-        'message': 'Profile picture updated',
-        'profilePicture': user.profilePicture
-    }), 200
+    return jsonify({'message': 'Profile picture updated'}), 200
+
 
 # ============================
 # ROUTE: Leaderboard
@@ -134,6 +128,7 @@ def leaderboard():
 
     return jsonify({'leaderboard': leaderboard}), 200
 
+
 # ============================
 # ROUTE: Submit Checklist
 # ============================
@@ -146,7 +141,25 @@ def submit_checklist():
     if not user:
         return jsonify({'message': 'User not found'}), 404
 
-    total_kg = calculate_carbon_emissions(payload)
+    def to_int_bool(value):
+        if isinstance(value, bool):
+            return 1 if value else 0
+        try:
+            return int(value)
+        except (TypeError, ValueError):
+            return 0
+
+    checklist_data = {}
+    for key in EMISSION_FACTORS.keys():
+        raw_val = to_int_bool(payload.get(key))
+
+        # untuk aktivitas negatif (semakin sedikit semakin baik) dibalik
+        if key in ['packagedFood', 'onlineShopping', 'wasteFood', 'airConditioningHeating']:
+            checklist_data[key] = 1 if raw_val == 1 else 0
+        else:
+            checklist_data[key] = raw_val
+
+    total_kg = calculate_carbon_emissions(checklist_data)
     level = classify_level(total_kg)
 
     thirty_days_ago = date.today() - timedelta(days=30)
@@ -166,7 +179,6 @@ def submit_checklist():
 
     improvement_suggestions = generate_improvement_suggestions(payload)
 
-    # simpan log utama
     daily_log = DailyCarbonLog(
         usersId=user.id,
         totalCarbon=round(float(total_kg), 2),
@@ -174,38 +186,53 @@ def submit_checklist():
         IslandPath=level - 1,
         carbonSaved=int(payload.get("carbonSaved", 0)),
         logDate=date.today(),
-        **{
-            key: (1 if payload.get(key) is True else 0 if isinstance(payload.get(key), bool)
-                  else int(payload.get(key) or 0))
-            for key in EMISSION_FACTORS.keys()
-        }
+        **checklist_data
     )
     db.session.add(daily_log)
 
-    # simpan goals (fuzzy dan improvement)
-    goals_log = DailyGoalsLog(
-        usersId=user.id,
-        logDate=date.today(),
-        # Numeric activities
-        carTravelKmGoal=fuzzy_analysis['suggestions']['carTravelKm'],
-        showerTimeMinutesGoal=fuzzy_analysis['suggestions']['showerTimeMinutes'],
-        electronicTimeHoursGoal=fuzzy_analysis['suggestions']['electronicTimeHours'],
-        # Negative checklist activities
-        packagedFoodGoal=1 if 'packagedFood' in improvement_suggestions else 0,
-        onlineShoppingGoal=1 if 'onlineShopping' in improvement_suggestions else 0,
-        wasteFoodGoal=1 if 'wasteFood' in improvement_suggestions else 0,
-        airConditioningHeatingGoal=1 if 'airConditioningHeating' in improvement_suggestions else 0,
-        # Positive checklistactivities
-        noDrivingGoal=1 if not 'noDriving' in improvement_suggestions else 0,
-        plantMealThanMeatGoal=1 if not 'plantMealThanMeat' in improvement_suggestions else 0,
-        useTumblerGoal=1 if not 'useTumbler' in improvement_suggestions else 0,
-        saveEnergyGoal=1 if not 'saveEnergy' in improvement_suggestions else 0,
-        separateRecycleWasteGoal=1 if not 'separateRecycleWaste' in improvement_suggestions else 0,
+    def should_save_numeric_goal(input_val, suggested_val, tolerance=0.1):
+        return abs(float(input_val) - float(suggested_val)) > tolerance
 
-        suggestions=fuzzy_analysis['suggestions'],
-        improvement_suggestions=improvement_suggestions
-    )
-    db.session.add(goals_log)
+    save_car_goal = should_save_numeric_goal(car_km, fuzzy_analysis['suggestions']['carTravelKm'])
+    save_shower_goal = should_save_numeric_goal(shower_min, fuzzy_analysis['suggestions']['showerTimeMinutes'])
+    save_electronic_goal = should_save_numeric_goal(electronic_hours, fuzzy_analysis['suggestions']['electronicTimeHours'])
+
+    # boolean goals pakai nilai yg sudah dibalik
+    save_packaged_food_goal = checklist_data['packagedFood'] == 1
+    save_online_shopping_goal = checklist_data['onlineShopping'] == 1
+    save_waste_food_goal = checklist_data['wasteFood'] == 1
+    save_ac_heating_goal = checklist_data['airConditioningHeating'] == 1
+
+    save_no_driving_goal = checklist_data['noDriving'] != 1
+    save_plant_meal_goal = checklist_data['plantMealThanMeat'] != 1
+    save_tumbler_goal = checklist_data['useTumbler'] != 1
+    save_energy_goal = checklist_data['saveEnergy'] != 1
+    save_recycle_goal = checklist_data['separateRecycleWaste'] != 1
+
+    if (save_car_goal or save_shower_goal or save_electronic_goal or
+        save_packaged_food_goal or save_online_shopping_goal or save_waste_food_goal or
+        save_ac_heating_goal or save_no_driving_goal or save_plant_meal_goal or
+        save_tumbler_goal or save_energy_goal or save_recycle_goal):
+
+        goals_log = DailyGoalsLog(
+            usersId=user.id,
+            logDate=date.today(),
+            carTravelKmGoal=fuzzy_analysis['suggestions']['carTravelKm'] if save_car_goal else None,
+            showerTimeMinutesGoal=fuzzy_analysis['suggestions']['showerTimeMinutes'] if save_shower_goal else None,
+            electronicTimeHoursGoal=fuzzy_analysis['suggestions']['electronicTimeHours'] if save_electronic_goal else None,
+            packagedFoodGoal=0 if save_packaged_food_goal else None,
+            onlineShoppingGoal=0 if save_online_shopping_goal else None,
+            wasteFoodGoal=0 if save_waste_food_goal else None,
+            airConditioningHeatingGoal=0 if save_ac_heating_goal else None,
+            noDrivingGoal=1 if save_no_driving_goal else None,
+            plantMealThanMeatGoal=1 if save_plant_meal_goal else None,
+            useTumblerGoal=1 if save_tumbler_goal else None,
+            saveEnergyGoal=1 if save_energy_goal else None,
+            separateRecycleWasteGoal=1 if save_recycle_goal else None,
+            suggestions=fuzzy_analysis['suggestions'] if (save_car_goal or save_shower_goal or save_electronic_goal) else None,
+            improvement_suggestions=improvement_suggestions if improvement_suggestions else None
+        )
+        db.session.add(goals_log)
 
     db.session.commit()
 
@@ -215,8 +242,104 @@ def submit_checklist():
         'emission_category': get_emission_category(level),
         'fuzzy_analysis': fuzzy_analysis,
         'improvement_suggestions': improvement_suggestions,
-        'historical_data_points': len(historical_logs)
+        'historical_data_points': len(historical_logs),
+        'goals_saved': {
+            'numeric_goals': save_car_goal or save_shower_goal or save_electronic_goal,
+            'improvement_goals': len(improvement_suggestions) > 0
+        }
     }), 201
+
+# ============================
+# ROUTE: Today Goals Completion
+# ============================
+@app.route('/check-goals-achieved', methods=['GET'])
+@firebase_required
+def check_goals_achieved():
+    user = User.query.filter_by(firebase_uid=request.user_uid).first()
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
+
+    today = date.today()
+    yesterday = today - timedelta(days=1)
+
+    # ambil log dan goals
+    today_log = DailyCarbonLog.query.filter_by(usersId=user.id, logDate=today).first()
+    yesterday_goals = DailyGoalsLog.query.filter_by(usersId=user.id, logDate=yesterday).first()
+
+    if not today_log:
+        return jsonify({'message': 'No carbon log found for today'}), 404
+    if not yesterday_goals:
+        return jsonify({'message': 'No goals found for yesterday'}), 404
+
+    def check_goal_achieved(goal_val, actual_val, goal_type='numeric'):
+        if goal_val is None:
+            return None
+        if goal_type == 'numeric':
+            return actual_val <= goal_val
+        elif goal_type == 'boolean':
+            return actual_val == goal_val
+        return False
+
+    results = {}
+    points_to_add = 0
+
+    # numeric goals
+    numeric_goals_list = [
+        ('carTravelKmGoal', 'carTravelKm'),
+        ('showerTimeMinutesGoal', 'showerTimeMinutes'),
+        ('electronicTimeHoursGoal', 'electronicTimeHours'),
+    ]
+    for goal_attr, log_attr in numeric_goals_list:
+        goal_val = getattr(yesterday_goals, goal_attr)
+        actual_val = getattr(today_log, log_attr)
+        achieved = check_goal_achieved(goal_val, actual_val, 'numeric')
+        results[log_attr] = achieved
+        if achieved:
+            points_to_add += 5
+
+    # boolean goals
+    bool_goals = [
+        ('packagedFoodGoal', 'packagedFood'),
+        ('onlineShoppingGoal', 'onlineShopping'),
+        ('wasteFoodGoal', 'wasteFood'),
+        ('airConditioningHeatingGoal', 'airConditioningHeating'),
+        ('noDrivingGoal', 'noDriving'),
+        ('plantMealThanMeatGoal', 'plantMealThanMeat'),
+        ('useTumblerGoal', 'useTumbler'),
+        ('saveEnergyGoal', 'saveEnergy'),
+        ('separateRecycleWasteGoal', 'separateRecycleWaste'),
+    ]
+    for goal_attr, log_attr in bool_goals:
+        goal_val = getattr(yesterday_goals, goal_attr)
+        actual_val = getattr(today_log, log_attr)
+        achieved = check_goal_achieved(goal_val, actual_val, 'boolean')
+        results[log_attr] = achieved
+        if achieved:
+            points_to_add += 5
+
+    # cek apakah sudah pernah tambah poin hari ini
+    points_earned_today = 0
+    if user.last_points_added_date != today:
+        if points_to_add > 0:
+            user.points += points_to_add
+            user.last_points_added_date = today
+            db.session.commit()
+            points_earned_today = points_to_add
+    else:
+        points_earned_today = 0  # sudah pernah tambah poin hari ini
+
+    return jsonify({
+        'date': str(today),
+        'goals_achieved': results,
+        'numeric_goals': {
+            'carTravelKmGoal': yesterday_goals.carTravelKmGoal,
+            'showerTimeMinutesGoal': yesterday_goals.showerTimeMinutesGoal,
+            'electronicTimeHoursGoal': yesterday_goals.electronicTimeHoursGoal
+        },
+        'points_earned': points_earned_today,
+        'total_points': user.points
+    }), 200
+
 
 
 # ============================
@@ -307,6 +430,7 @@ def get_latest_goals():
         'goals': combined_goals,
         'logDate': latest_goals.logDate.isoformat()
     }), 200
+    
 
 # ============================
 # ROUTE: Check Today's Submission

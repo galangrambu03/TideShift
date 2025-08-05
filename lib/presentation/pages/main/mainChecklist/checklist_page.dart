@@ -3,6 +3,7 @@ import 'package:ecomagara/datasource/models/ChecklistItemModel.dart';
 import 'package:ecomagara/functions/getCarbonColor_switch.dart';
 import 'package:ecomagara/presentation/pages/main/mainChecklist/carbonUnit_controller.dart';
 import 'package:ecomagara/presentation/pages/main/mainChecklist/dailyGoals_controller.dart';
+import 'package:ecomagara/presentation/pages/main/mainChecklist/goalsAchived_controller.dart';
 import 'package:ecomagara/presentation/pages/main/mainHome/carbonLog_controller.dart';
 import 'package:ecomagara/presentation/widgets/defaultButton.dart';
 import 'package:ecomagara/presentation/widgets/donutChart.dart';
@@ -22,6 +23,7 @@ class _ChecklistPageState extends State<ChecklistPage> {
   final DailyCarbonLogController carbonLogController = Get.find();
   final CarbonUnitController carbonUnitController = Get.find();
   final DailyGoalsController dailyGoalsController = Get.find();
+  final GoalsAchievedController goalsAchievedController = Get.find();
 
   @override
   void initState() {
@@ -208,44 +210,46 @@ class _ChecklistPageState extends State<ChecklistPage> {
                           controller
                               .carbonVariables[9]
                               .value
-                              .value, // carTravelKm
+                              .value, // carTravelKm (index 9)
                           controller.carbonVariables[0].value.value
                               ? 1
-                              : 0, // packagedFood
+                              : 0, // packagedFood (index 0)
                           controller
                               .carbonVariables[10]
                               .value
-                              .value, // showerTimeMinutes
+                              .value, // showerTimeMinutes (index 10)
                           controller
                               .carbonVariables[11]
                               .value
-                              .value, // electronicDeviceTimeHours
-                          controller.carbonVariables[6].value.value
-                              ? 1
-                              : 0, // onlineShopping
-                          controller.carbonVariables[2].value.value
-                              ? 1
-                              : 0, // wasteFood
-                          controller.carbonVariables[4].value.value
-                              ? 1
-                              : 0, // airConditioningHeating
-                          controller.carbonVariables[5].value.value
-                              ? 1
-                              : 0, // noDriving
+                              .value, // electronicDeviceTimeHours (index 11)
                           controller.carbonVariables[1].value.value
                               ? 1
-                              : 0, // plantMealThanMeat
-                          controller.carbonVariables[7].value.value
+                              : 0, // onlineShopping (index 1)
+                          controller.carbonVariables[2].value.value
                               ? 1
-                              : 0, // useTumbler
-                          controller.carbonVariables[8].value.value
-                              ? 1
-                              : 0, // saveEnergy
+                              : 0, // wasteFood (index 2)
                           controller.carbonVariables[3].value.value
                               ? 1
-                              : 0, // separateRecycleWaste
+                              : 0, // airConditioningHeating (index 3)
+                          controller.carbonVariables[4].value.value
+                              ? 1
+                              : 0, // noDriving (walk/bike/public transport) (index 4)
+                          controller.carbonVariables[5].value.value
+                              ? 1
+                              : 0, // plantMealThanMeat (index 5)
+                          controller.carbonVariables[6].value.value
+                              ? 1
+                              : 0, // useTumbler (index 6)
+                          controller.carbonVariables[7].value.value
+                              ? 1
+                              : 0, // saveEnergy (turn off lights) (index 7)
+                          controller.carbonVariables[8].value.value
+                              ? 1
+                              : 0, // separateRecycleWaste (index 8)
                         );
+
                         await dailyGoalsController.fetchGoals();
+                        await goalsAchievedController.fetchGoalsAchieved();
                         _loadHumor(); // refresh humor
                       } catch (e) {
                         Get.snackbar(
@@ -279,7 +283,7 @@ class _ChecklistPageState extends State<ChecklistPage> {
     );
   }
 
-  // Recap Screen to use by user to see detail of their carbons
+  // RECAP SCREEN: Recap Screen to use by user to see detail of their carbons
   Widget recapScreen() {
     if (carbonLogController.todayLog.value == null) {
       return Center(
@@ -289,6 +293,8 @@ class _ChecklistPageState extends State<ChecklistPage> {
         ),
       );
     }
+
+    final GoalsAchievedController goalsAchievedController = Get.find();
     var log = carbonLogController.todayLog.value!;
 
     return SafeArea(
@@ -296,16 +302,16 @@ class _ChecklistPageState extends State<ChecklistPage> {
         child: Column(
           children: [
             Padding(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // gambar pulau diganti teks
+                  // gambar pulau
                   Container(
                     height: 170,
                     width: double.infinity,
                     alignment: Alignment.center,
-                    padding: EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       gradient: AppColors.primaryGradient,
                       borderRadius: BorderRadius.circular(12),
@@ -314,26 +320,29 @@ class _ChecklistPageState extends State<ChecklistPage> {
                       'assets/images/islandsImages/island${log.islandPath}.png',
                     ),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
 
                   // total karbon
                   Container(
                     width: double.infinity,
-                    padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 8,
+                      horizontal: 16,
+                    ),
                     decoration: BoxDecoration(
                       color: getCarbonColor(log.carbonLevel),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
                       "Total Net Carbon Emission is ${log.totalCarbon} kgCO₂",
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
-                  SizedBox(height: 25),
+                  const SizedBox(height: 25),
 
                   // perbandingan lucu
                   Column(
@@ -342,18 +351,17 @@ class _ChecklistPageState extends State<ChecklistPage> {
                         'assets/images/decorationImages/mascotHappy.png',
                         scale: 17,
                       ),
-                      SizedBox(height: 4),
-                      // TODO: Implement unique con
+                      const SizedBox(height: 4),
                       Obx(
                         () => Text(
                           carbonUnitController.humorText.value,
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 14),
+                          style: const TextStyle(fontSize: 14),
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 30),
+                  const SizedBox(height: 30),
 
                   // EMISSION DISTRIBUTION TITLE
                   Align(
@@ -372,33 +380,32 @@ class _ChecklistPageState extends State<ChecklistPage> {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       "Category based view. Reductions only affect their own category, unlike Net Carbon Emission which applies reductions globally.",
-                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                   ),
-                  SizedBox(height: 30),
+                  const SizedBox(height: 30),
 
-                  // grafik diganti teks
+                  // grafik
                   Obx(() {
                     if (carbonLogController.todayLog.value != null) {
                       final categoryData = carbonLogController
                           .calculateCarbonDistribution(
                             carbonLogController.todayLog.value!,
                           );
-
                       return CarbonDonutChart(data: categoryData);
                     } else {
-                      return SizedBox();
+                      return const SizedBox();
                     }
                   }),
 
-                  SizedBox(height: 50),
+                  const SizedBox(height: 50),
                 ],
               ),
             ),
 
-            // TODAY GOALS COMPLETION TITLE
+            // TODAY GOALS COMPLETION
             Padding(
-              padding: EdgeInsetsGeometry.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
@@ -413,61 +420,108 @@ class _ChecklistPageState extends State<ChecklistPage> {
             ),
 
             Padding(
-              padding: EdgeInsetsGeometry.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
               child: Align(
                 alignment: Alignment.centerLeft,
-                child: Text(
-                  "You've completed x goals, x pts added to your account",
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
-                ),
+                child: Obx(() {
+                  final goalsData = goalsAchievedController.goalsAchieved.value;
+                  if (goalsData == null) return const SizedBox();
+
+                  final achievedGoals =
+                      goalsData.goalsAchieved.entries
+                          .where((e) => e.value == true)
+                          .toList();
+
+                  return Text(
+                    "You've completed ${achievedGoals.length} goals, ${achievedGoals.length * 5} pts added to your account",
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey,
+                    ),
+                  );
+                }),
               ),
             ),
 
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
 
-            // TODAY GOALS COMPLETION CARDS
             SizedBox(
               height: 70,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                padding: EdgeInsets.symmetric(horizontal: 8),
-                children: [
-                  GoalCard(
-                    text: 'Traveling by bicycle, walk or public transportation',
-                    showCarbonSaved: true,
-                    carbonSaved: '4',
-                    gradient: AppColors.primaryGradient,
-                    textColor: AppColors.surface,
-                  ),
-                  GoalCard(
-                    text: 'Eating more vegetables than meat',
-                    showCarbonSaved: true,
-                    carbonSaved: '0.7',
-                    gradient: AppColors.secondaryGradient,
-                    textColor: AppColors.surface,
-                  ),
-                  GoalCard(
-                    text: 'Use reusable bottle like tumbler instead of plastic',
-                    showCarbonSaved: true,
-                    carbonSaved: '5',
-                    gradient: AppColors.primaryGradient,
-                    textColor: AppColors.surface,
-                  ),
-                ],
-              ),
+              child: Obx(() {
+                final goalsData = goalsAchievedController.goalsAchieved.value;
+                if (goalsData == null) {
+                  return const Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.hourglass_empty_rounded,
+                          size: 20,
+                          color: AppColors.textGrey,
+                        ),
+                        SizedBox(width: 6),
+                        Text(
+                          "No goals data",
+                          style: TextStyle(color: AppColors.textGrey),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                final allGoals =
+                    goalsData.goalsAchieved.entries
+                        .where((e) => e.value != null) // filter yang tidak null
+                        .toList();
+
+                if (allGoals.isEmpty) {
+                  return const Center(child: Text("No goals data"));
+                }
+
+                return ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  itemCount: allGoals.length,
+                  itemBuilder: (context, index) {
+                    final goal = allGoals[index];
+                    final isNumeric = [
+                      'carTravelKmGoal',
+                      'showerTimeMinutesGoal',
+                      'electronicTimeHoursGoal',
+                    ].contains(goal.key);
+
+                    return GoalCard(
+                      text:
+                          isNumeric
+                              ? getNumericGoalDescription(
+                                goal.key,
+                                goalsData.numericGoals[goal.key],
+                              )
+                              : _getGoalLabel(goal.key),
+                      showCarbonSaved: !isNumeric,
+                      carbonSaved: !isNumeric ? _getCarbonSaved(goal.key) : '',
+                      gradient:
+                          goal.value == true
+                              ? AppColors.primaryGradient
+                              : AppColors.secondaryGradient,
+                      textColor: AppColors.surface,
+                    );
+                  },
+                );
+              }),
             ),
 
-            SizedBox(height: 25),
+            const SizedBox(height: 25),
 
             // NEXT GOALS TITLE
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 children: [
                   Row(
                     children: [
                       Icon(Icons.auto_awesome, color: AppColors.primary),
-                      SizedBox(width: 8),
+                      const SizedBox(width: 8),
                       Text(
                         'Next Goals',
                         style: TextStyle(
@@ -478,19 +532,19 @@ class _ChecklistPageState extends State<ChecklistPage> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
                       "Goals that you need try to achieve for the next recap!",
-                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                   ),
                 ],
               ),
             ),
 
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
 
             // NEXT GOALS CARDS
             SizedBox(
@@ -516,7 +570,7 @@ class _ChecklistPageState extends State<ChecklistPage> {
                           gradient: AppColors.primaryGradient,
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: Center(
+                        child: const Center(
                           child: Text(
                             "No new next goals today, you're doing great!",
                             style: TextStyle(
@@ -538,8 +592,6 @@ class _ChecklistPageState extends State<ChecklistPage> {
                   itemCount: dailyGoalsController.goals.length,
                   itemBuilder: (context, index) {
                     final goal = dailyGoalsController.goals[index];
-
-                    // Filter goal yang nilainya 0.0
                     if (goal.value == 0.0) {
                       return const SizedBox.shrink();
                     }
@@ -559,10 +611,68 @@ class _ChecklistPageState extends State<ChecklistPage> {
               }),
             ),
 
-            SizedBox(height: 70),
+            const SizedBox(height: 70),
           ],
         ),
       ),
     );
+  }
+
+  String _getGoalLabel(String key) {
+    const labels = {
+      // numeric goals
+      'carTravelKmGoal': 'Try limit your vehicle usage to',
+      'showerTimeMinutesGoal': 'Try limit your showers time to',
+      'electronicTimeHoursGoal': 'Try reduce your screen time to',
+
+      // negative goals
+      'packagedFood': 'Eat unpackaged or fresh food',
+      'onlineShopping': 'Limit online shopping habits',
+      'wasteFood': 'Avoid food waste',
+      'airConditioningHeating': 'Reduce air conditioning or heating usage',
+
+      // positive goals
+      'noDriving': 'Use environmentally friendly transportation',
+      'plantMealThanMeat': 'Eat more plant based meals',
+      'useTumbler': 'Bring your own tumbler or reusable bottle',
+      'saveEnergy': 'Practice energy saving at home',
+      'separateRecycleWaste': 'Separate waste for recycling',
+    };
+
+    return labels[key] ?? key;
+  }
+
+  String getNumericGoalDescription(String key, num? value) {
+    if (value == null) return '';
+    switch (key) {
+      case 'carTravelKmGoal':
+        return 'Try limit your vehicle usage to $value km';
+      case 'showerTimeMinutesGoal':
+        return 'Try limit your shower time to $value minutes';
+      case 'electronicTimeHoursGoal':
+        return 'Try reduce your screen time to $value hours';
+      default:
+        return '';
+    }
+  }
+
+  String _getGoalUnit(String key) {
+    const units = {
+      'carTravelKmGoal': 'km',
+      'showerTimeMinutesGoal': 'minutes',
+      'electronicTimeHoursGoal': 'hours',
+    };
+    return units[key] ?? '';
+  }
+
+  String _getCarbonSaved(String key) {
+    const carbonValues = {
+      'noDriving': '4',
+      'plantMealThanMeat': '0.7',
+      'useTumbler': '5',
+      'saveEnergy': '2',
+      'separateRecycleWaste': '1',
+    };
+    return carbonValues[key] ?? '0';
   }
 }

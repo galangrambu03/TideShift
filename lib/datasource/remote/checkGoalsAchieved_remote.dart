@@ -1,29 +1,26 @@
 import 'dart:convert';
-import 'package:ecomagara/config/config.dart';
-import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
-import '../models/dailyGoalsResponseModel.dart';
+import 'package:http/http.dart' as http;
+import 'package:ecomagara/config/config.dart';
+import 'package:ecomagara/datasource/models/goalsAchievedModel.dart';
 
-class DailyGoalsRemoteDataSource {
+class GoalsAchievedRemoteDatasource {
   final String baseUrl = AppConfig.localUrl;
   final http.Client client = http.Client();
 
-  Future<http.Response> _retryRequest(
-    Future<http.Response> Function() requestFn,
-  ) async {
+  Future<http.Response> _retryRequest(Future<http.Response> Function() requestFn) async {
     final response = await requestFn();
 
-    if (response.statusCode == 401 &&
-        response.body.contains("Token used too early")) {
+    if (response.statusCode == 401 && response.body.contains("Token used too early")) {
       print("⚠ Token too early, retrying in 2 seconds...");
-      await Future.delayed(Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 2));
       return await requestFn();
     }
 
     return response;
   }
 
-  Future<DailyGoalsResponseModel> fetchLatestGoals() async {
+  Future<GoalsAchievedModel> fetchGoalsAchieved() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
       throw Exception("User not logged in");
@@ -33,7 +30,7 @@ class DailyGoalsRemoteDataSource {
 
     final response = await _retryRequest(() {
       return client.get(
-        Uri.parse('$baseUrl/latest-goals'),
+        Uri.parse('$baseUrl/check-goals-achieved'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $authToken',
@@ -42,10 +39,10 @@ class DailyGoalsRemoteDataSource {
     });
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return DailyGoalsResponseModel.fromJson(data);
+      final jsonMap = json.decode(response.body);
+      return GoalsAchievedModel.fromJson(jsonMap);
     } else {
-      throw Exception('Failed to load goals: ${response.body}');
+      throw Exception('Failed to fetch goals achieved: ${response.body}');
     }
   }
 }

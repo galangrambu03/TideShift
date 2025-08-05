@@ -105,6 +105,7 @@ class _HomepageState extends State<Homepage> {
                           Obx(
                             () => GestureDetector(
                               child: CircleAvatar(
+                                backgroundColor: AppColors.background,
                                 backgroundImage: AssetImage(
                                   'assets/images/profilePictures/${userController.userData.value!.profilePicture}',
                                 ),
@@ -259,7 +260,7 @@ class _HomepageState extends State<Homepage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  "You haven't recapped your carbon yet today",
+                  "You've not recap your carbon yet today",
                   style: TextStyle(
                     color: AppColors.surface,
                     fontWeight: FontWeight.bold,

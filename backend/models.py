@@ -15,6 +15,7 @@ class User(db.Model):
     points = db.Column(db.Integer, nullable=False, default=0)
     currentIslandTheme = db.Column(db.Integer, nullable=False, default=0)
     firebase_uid = db.Column(db.String(255), nullable=True, unique=True)
+    last_points_added_date = db.Column(db.Date, nullable=True)  
 
 
 class DailyCarbonLog(db.Model):

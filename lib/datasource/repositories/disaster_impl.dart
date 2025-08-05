@@ -5,7 +5,6 @@ import 'package:ecomagara/datasource/local/diyContentDatasource.dart';
 import 'package:ecomagara/datasource/models/disasterModel.dart';
 import 'package:ecomagara/datasource/models/diyModel.dart';
 import 'package:ecomagara/domain/repositories/disaster_repository.dart';
-import 'package:ecomagara/domain/repositories/diy_repository.dart';
 
 class DisasterImpl implements DisasterRepository {
   final DisasterLocalDatasource dataSource;
