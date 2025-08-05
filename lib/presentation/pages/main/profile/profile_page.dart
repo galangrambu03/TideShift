@@ -151,8 +151,8 @@ class ProfilePage extends StatelessWidget {
             const SizedBox(height: 5),
 
             // eco warrior text
-            const Text(
-              'Eco Warrior since 2023',
+            Text(
+              'Eco Warrior since ${userController.userData.value!.joinDate}',
               style: TextStyle(fontSize: 14, color: Colors.black54),
             ),
             const SizedBox(height: 20),

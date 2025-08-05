@@ -468,10 +468,19 @@ class _ChecklistPageState extends State<ChecklistPage> {
                   );
                 }
 
-                final allGoals =
-                    goalsData.goalsAchieved.entries
-                        .where((e) => e.value != null) // filter yang tidak null
-                        .toList();
+                final allGoals = [
+                  ...goalsData.goalsAchieved.entries.where(
+                    (e) => e.value != null,
+                  ),
+                  ...goalsData.numericGoals.entries
+                      .where((e) => e.value != null)
+                      .map(
+                        (e) => MapEntry(
+                          e.key,
+                          true,
+                        ), 
+                      ),
+                ];
 
                 if (allGoals.isEmpty) {
                   return const Center(child: Text("No goals data"));
@@ -655,14 +664,14 @@ class _ChecklistPageState extends State<ChecklistPage> {
     }
   }
 
-  String _getGoalUnit(String key) {
-    const units = {
-      'carTravelKmGoal': 'km',
-      'showerTimeMinutesGoal': 'minutes',
-      'electronicTimeHoursGoal': 'hours',
-    };
-    return units[key] ?? '';
-  }
+  // String _getGoalUnit(String key) {
+  //   const units = {
+  //     'carTravelKmGoal': 'km',
+  //     'showerTimeMinutesGoal': 'minutes',
+  //     'electronicTimeHoursGoal': 'hours',
+  //   };
+  //   return units[key] ?? '';
+  // }
 
   String _getCarbonSaved(String key) {
     const carbonValues = {

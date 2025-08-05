@@ -93,6 +93,7 @@ class AuthController extends GetxController {
 
       // fetch ulang data user dan lainnya
       await reloadUserData();
+      await Get.find<GoalsAchievedController>().fetchGoalsAchieved();
     } catch (e) {
       // kalau gagal fetch user (misal user belum ada di DB)
       if (user.value != null) {
