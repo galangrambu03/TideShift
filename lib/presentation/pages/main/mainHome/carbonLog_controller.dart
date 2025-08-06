@@ -137,7 +137,7 @@ class DailyCarbonLogController extends GetxController {
     // lifestyle
     double lifestyle = 0.0;
     lifestyle += (log.onlineShopping ? 1.0 : 0.0);
-
+    
     double lifestyleReduction = 0.0;
     lifestyleReduction += (log.useTumbler ? 0.2 : 0.0);
     lifestyleReduction += (log.separateRecycleWaste ? 0.7 : 0.0);

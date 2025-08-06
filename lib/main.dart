@@ -3,10 +3,11 @@ import 'package:ecomagara/datasource/local/carbonUnit.dart';
 import 'package:ecomagara/datasource/local/disasterContent.dart';
 import 'package:ecomagara/datasource/local/diyContentDatasource.dart';
 import 'package:ecomagara/datasource/local/unique_fact.dart';
-import 'package:ecomagara/datasource/remote/checkGoalsAchieved_remote.dart';
-import 'package:ecomagara/datasource/remote/dailyCarbonLog_remote.dart';
-import 'package:ecomagara/datasource/remote/dailyGoalsLog_remote.dart';
-import 'package:ecomagara/datasource/remote/user_remote.dart';
+import 'package:ecomagara/datasource/remote/checkGoalsAchieved_datasource.dart';
+import 'package:ecomagara/datasource/remote/dailyCarbonLog_datasource.dart';
+import 'package:ecomagara/datasource/remote/dailyGoalsLog_datasource.dart';
+import 'package:ecomagara/datasource/remote/leaderboard_datasource.dart';
+import 'package:ecomagara/datasource/remote/user_datasource.dart';
 import 'package:ecomagara/datasource/repositories/achievedGoals_impl.dart';
 import 'package:ecomagara/datasource/repositories/carbonLog_impl.dart';
 import 'package:ecomagara/datasource/repositories/carbonUnit_impl.dart';
@@ -14,6 +15,7 @@ import 'package:ecomagara/datasource/repositories/disaster_impl.dart';
 import 'package:ecomagara/datasource/repositories/diy_impl.dart';
 import 'package:ecomagara/datasource/repositories/fact_impl.dart';
 import 'package:ecomagara/datasource/repositories/goalsLog_impl.dart';
+import 'package:ecomagara/datasource/repositories/leaderboard_impl.dart';
 import 'package:ecomagara/datasource/repositories/user_impl.dart';
 import 'package:ecomagara/datasource/services/firebaseAuthServices.dart';
 import 'package:ecomagara/domain/repositories/dailyCarbonLog_repository.dart';
@@ -36,6 +38,7 @@ import 'package:ecomagara/presentation/pages/main/mainDiy/diy_page.dart';
 import 'package:ecomagara/presentation/pages/main/mainHome/calendar_controller.dart';
 import 'package:ecomagara/presentation/pages/main/mainHome/carbonLog_controller.dart';
 import 'package:ecomagara/presentation/pages/main/mainHome/homepage.dart';
+import 'package:ecomagara/presentation/pages/main/mainleaderboard/leaderboard_controller.dart';
 import 'package:ecomagara/presentation/pages/main/mainleaderboard/leaderboard_page.dart';
 import 'package:ecomagara/presentation/pages/main/splashscreen/splashcreen_controller.dart';
 import 'package:ecomagara/presentation/pages/main/splashscreen/splashscreen.dart';
@@ -84,7 +87,14 @@ Future<void> main() async {
 
   Get.lazyPut(() => UserController(), fenix: true);
   Get.lazyPut(() => SplashcreenController(), fenix: true);
-  Get.lazyPut(() => CalendarController(), fenix: true);
+  Get.lazyPut(
+    () => CalendarController(
+      repository: DailyCarbonLogRepositoryImpl(
+        remoteDataSource: DailyCarbonLogRemoteDataSource(),
+      ),
+    ),
+    fenix: true,
+  );
   Get.put(NavigationController(), permanent: true);
   Get.lazyPut(() => ChecklistController(), fenix: true);
   Get.lazyPut(
@@ -113,7 +123,14 @@ Future<void> main() async {
       repository: GoalsAchievedRepositoryImpl(
         remoteDatasource: GoalsAchievedRemoteDatasource(),
       ),
-    ), fenix: true
+    ),
+    fenix: true,
+  );
+  Get.lazyPut(
+    () => LeaderboardController(
+      LeaderboardRepositoryImpl(LeaderboardDatasource()),
+    ),
+    fenix: true,
   );
 
   runApp(const MyApp());

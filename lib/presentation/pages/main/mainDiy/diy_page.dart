@@ -27,7 +27,7 @@ class DiyPage extends StatelessWidget {
             elevation: 0,
             centerTitle: true,
             title: const Text(
-              'DIY For Earth',
+              'DIY For Island',
               style: TextStyle(
                 color: AppColors.primary,
                 fontWeight: FontWeight.bold,

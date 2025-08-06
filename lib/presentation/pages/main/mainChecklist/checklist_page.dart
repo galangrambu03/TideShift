@@ -4,6 +4,7 @@ import 'package:ecomagara/functions/getCarbonColor_switch.dart';
 import 'package:ecomagara/presentation/pages/main/mainChecklist/carbonUnit_controller.dart';
 import 'package:ecomagara/presentation/pages/main/mainChecklist/dailyGoals_controller.dart';
 import 'package:ecomagara/presentation/pages/main/mainChecklist/goalsAchived_controller.dart';
+import 'package:ecomagara/presentation/pages/main/mainHome/calendar_controller.dart';
 import 'package:ecomagara/presentation/pages/main/mainHome/carbonLog_controller.dart';
 import 'package:ecomagara/presentation/widgets/defaultButton.dart';
 import 'package:ecomagara/presentation/widgets/donutChart.dart';
@@ -254,6 +255,7 @@ class _ChecklistPageState extends State<ChecklistPage> {
                         await goalsAchievedController.fetchGoalsAchieved();
                         await userController.fetchUserProfile();
                         await _loadHumor(); // refresh humor
+                        await Get.find<CalendarController>().fetchRecentLogs();
                       } catch (e) {
                         Get.snackbar(
                           'Error',
@@ -429,13 +431,23 @@ class _ChecklistPageState extends State<ChecklistPage> {
                   final goalsData = goalsAchievedController.goalsAchieved.value;
                   if (goalsData == null) return const SizedBox();
 
-                  final achievedGoals =
+                  final achievedBooleanGoals =
                       goalsData.goalsAchieved.entries
                           .where((e) => e.value == true)
                           .toList();
 
+                  final achievedNumericGoals =
+                      goalsData.numericGoals.entries
+                          .where((e) => e.value.achieved == true)
+                          .toList();
+
+                  final totalAchievedGoals = [
+                    ...achievedBooleanGoals,
+                    ...achievedNumericGoals,
+                  ];
+
                   return Text(
-                    "You've completed ${achievedGoals.length} goals, ${achievedGoals.length * 5} pts added to your account",
+                    "You've completed ${totalAchievedGoals.length} goals, ${totalAchievedGoals.length * 5} pts added to your account",
                     style: const TextStyle(fontSize: 12, color: Colors.grey),
                   );
                 }),
@@ -469,17 +481,14 @@ class _ChecklistPageState extends State<ChecklistPage> {
                 }
 
                 final allGoals = [
+                  // boolean goals
                   ...goalsData.goalsAchieved.entries.where(
                     (e) => e.value != null,
                   ),
-                  ...goalsData.numericGoals.entries
-                      .where((e) => e.value != null)
-                      .map(
-                        (e) => MapEntry(
-                          e.key,
-                          true,
-                        ), 
-                      ),
+                  // numeric goals (hanya yang target-nya tidak null)
+                  ...goalsData.numericGoals.entries.where(
+                    (e) => e.value.target != null,
+                  ),
                 ];
 
                 if (allGoals.isEmpty) {
@@ -498,18 +507,23 @@ class _ChecklistPageState extends State<ChecklistPage> {
                       'electronicTimeHoursGoal',
                     ].contains(goal.key);
 
+                    final bool isAchieved =
+                        isNumeric
+                            ? goalsData.numericGoals[goal.key]?.achieved == true
+                            : goal.value == true;
+
                     return GoalCard(
                       text:
                           isNumeric
                               ? getNumericGoalDescription(
                                 goal.key,
-                                goalsData.numericGoals[goal.key],
+                                goalsData.numericGoals[goal.key]?.target,
                               )
                               : _getGoalLabel(goal.key),
                       showCarbonSaved: !isNumeric,
                       carbonSaved: !isNumeric ? _getCarbonSaved(goal.key) : '',
                       gradient:
-                          goal.value == true
+                          isAchieved
                               ? AppColors.primaryGradient
                               : AppColors.secondaryGradient,
                       textColor: AppColors.surface,

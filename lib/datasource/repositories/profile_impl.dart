@@ -1,4 +1,4 @@
-import 'package:ecomagara/datasource/remote/profileDatasource.dart';
+import 'package:ecomagara/datasource/remote/profile_datasource.dart';
 import 'package:ecomagara/domain/profile_repository.dart';
 
 class ProfileRepositoryImpl implements ProfileRepository {
@@ -10,7 +10,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
   Future<void> updateProfilePicture(String newImageUrl) {
     return datasource.updateProfilePicture(newImageUrl);
   }
-
+  
   // @override
   // Future<UserModel> fetchUser() {
   //   return datasource.fetchUser();

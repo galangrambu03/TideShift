@@ -1,13 +1,22 @@
 import 'package:ecomagara/config/colors.dart';
+import 'package:ecomagara/datasource/models/DailyCarbonLogModel.dart';
+import 'package:ecomagara/presentation/pages/main/mainChecklist/carbonUnit_controller.dart';
+import 'package:ecomagara/presentation/pages/main/mainHome/carbonLog_controller.dart';
+import 'package:ecomagara/presentation/widgets/donutChart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'calendar_controller.dart';
 
-class KalenderBergambar extends StatelessWidget {
-  final controller = Get.find<CalendarController>();
-
+class KalenderBergambar extends StatefulWidget {
   KalenderBergambar({super.key});
+
+  @override
+  State<KalenderBergambar> createState() => _KalenderBergambarState();
+}
+
+class _KalenderBergambarState extends State<KalenderBergambar> {
+  final controller = Get.find<CalendarController>();
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +119,6 @@ class KalenderBergambar extends StatelessWidget {
   }
 
   // Calendar grid builder
-  // : Generates a grid of days for the current month
   Widget _buildCalendarGrid(List<DateTime?> days) {
     return GridView.builder(
       physics: const NeverScrollableScrollPhysics(),
@@ -134,20 +142,22 @@ class KalenderBergambar extends StatelessWidget {
   }
 
   // Builds a single day cell
-  // : Displays the day number or an image if data exists for that day
   Widget _buildDayCell(DateTime? day) {
     if (day == null) return const SizedBox();
 
-    final dateKey = DateTime(day.year, day.month, day.day);
     final today = DateTime.now();
     final isToday = controller.isSameDay(day, controller.today);
     final isFuture = day.isAfter(DateTime(today.year, today.month, today.day));
 
     return Obx(() {
-      final level = controller.data[dateKey];
-      final asset = controller.getAsset(level);
+      // Get log data for this specific date
+      final logForDate = controller.getLogForDate(day);
+      final carbonLevel =
+          logForDate?.carbonLevel; // Use carbonLevel from the model
+      final asset = controller.getAsset(carbonLevel);
 
-      final isClickable = level != null; // only clickable if there's data
+      final hasData =
+          logForDate != null; // Check if there's log data for this date
 
       final child = Container(
         alignment: Alignment.center,
@@ -160,7 +170,7 @@ class KalenderBergambar extends StatelessWidget {
                 )
                 : null,
         child:
-            asset != null
+            asset != null && hasData
                 ? Image.asset(asset, height: 36, width: 36, fit: BoxFit.contain)
                 : Text(
                   "${day.day}",
@@ -176,10 +186,11 @@ class KalenderBergambar extends StatelessWidget {
       );
 
       // Date is clickable only if it has data
-      if (isClickable) {
+      if (hasData) {
         return GestureDetector(
           onTap: () {
             print("Selected date with data: ${day.toLocal()}");
+            showDetailHistory(logForDate);
           },
           child: child,
         );
@@ -188,20 +199,141 @@ class KalenderBergambar extends StatelessWidget {
       return child;
     });
   }
-  
-  // Show the the history detail (Total carbon, carbon per category, Island type)
-  void showDetailHistory() {
+
+  // Show the history detail (Total carbon, carbon per category, Island type)
+  void showDetailHistory(CarbonLogModel? log) {
+    if (log == null) return;
+
+    final carbonLogController = Get.find<DailyCarbonLogController>();
+    final carbonUnitController = Get.find<CarbonUnitController>();
+
+    final date = DateFormat('d MMMM yyyy').format(DateTime.parse(log.logDate));
+    final totalCarbon = log.totalCarbon.toStringAsFixed(1);
+
+    // Load humorText berdasarkan totalCarbon
+    carbonUnitController.loadHumor(log.totalCarbon);
+
+    // Hitung data distribusi kategori karbon
+    final categoryData = carbonLogController.calculateCarbonDistribution(log);
+
+    final total = categoryData.values.fold(0.0, (a, b) => a + b);
+    final Map<String, String> labelData = categoryData.map(
+      (key, value) =>
+          MapEntry(key, "${((value / total) * 100).toStringAsFixed(1)}%"),
+    );
+
     Get.dialog(
       Dialog(
-        backgroundColor: AppColors.background, // warna latar belakang popup
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: SizedBox(
-            width: 300,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.85,
+            maxWidth: 360,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                // title bar
+                Row(
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.arrow_back, color: Color(0xFF4E6656)),
+                      onPressed: () => Get.back(),
+                    ),
+                    Text(
+                      "Daily Carbon History",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF4E6656),
+                      ),
+                    ),
+                  ],
+                ),
+                Text(
+                  date.toUpperCase(),
+                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                ),
+                SizedBox(height: 15),
+
+                Flexible(
+                  child: SingleChildScrollView(
+                    physics: BouncingScrollPhysics(),
+                    child: Column(
+                      children: [
+                        // container gambar + total carbon
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              width: 100,
+                              height: 100,
+                              padding: EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                gradient: AppColors.primaryGradient,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Image.asset(
+                                'assets/images/islandsImages/island${log.islandPath}.png',
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                            SizedBox(width: 12),
+                            Container(
+                              padding: EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                gradient: AppColors.primaryGradient,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Your Total Carbon",
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: AppColors.surface,
+                                    ),
+                                  ),
+                                  SizedBox(height: 4),
+                                  Text(
+                                    "CO₂ $totalCarbon kg",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.surface,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        SizedBox(height: 15),
+
+                        Image.asset(
+                          'assets/images/decorationImages/mascotHappy.png',
+                          scale: 17,
+                        ),
+                        SizedBox(height: 4),
+                        Obx(
+                          () => Text(
+                            carbonUnitController.humorText.value,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 14),
+                          ),
+                        ),
+
+                        SizedBox(height: 40),
+
+                        CarbonDonutChart(data: categoryData),
+                      ],
+                    ),
+                  ),
+                ),
               ],
             ),
           ),

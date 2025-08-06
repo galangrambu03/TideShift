@@ -105,7 +105,7 @@ class _HomepageState extends State<Homepage> {
                           Obx(
                             () => GestureDetector(
                               child: CircleAvatar(
-                                backgroundColor: AppColors.background,
+                                backgroundColor: Colors.black,
                                 backgroundImage: AssetImage(
                                   'assets/images/profilePictures/${userController.userData.value!.profilePicture}',
                                 ),

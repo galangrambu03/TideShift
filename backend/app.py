@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, g, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func, desc
 from firebase_config import *
@@ -26,6 +26,7 @@ db.init_app(app)
 
 with app.app_context():
     db.create_all()
+
 
 # ============================
 # ROUTE: Sync User
@@ -108,23 +109,40 @@ def update_profile_picture():
 # ============================
 @app.route('/leaderboard', methods=['GET'])
 @firebase_required
-def leaderboard():  
-    entries = (
-        db.session.query(
-            User.username,
-            func.sum(DailyCarbonLog.carbonSaved).label('totalPoints')
-        )
-        .join(DailyCarbonLog, DailyCarbonLog.usersId == User.id)
-        .group_by(User.id)
-        .order_by(desc('totalPoints'))
-        .limit(10)
+def leaderboard():
+    # ambil 15 besar user berdasarkan points
+    top_users = (
+        db.session.query(User)
+        .order_by(desc(User.points))
+        .limit(15)
         .all()
     )
 
     leaderboard = [
-        {"username": e.username, "points": int(e.totalPoints or 0)}
-        for e in entries
+        {
+            "username": u.username,
+            "points": int(u.points or 0),
+            "profilePicture": u.profilePicture
+        }
+        for u in top_users
     ]
+
+    # ambil user login berdasarkan firebase_uid
+    current_user = None
+    if hasattr(g, "firebase_user") and g.firebase_user:
+        firebase_uid = g.firebase_user.get("uid")
+        current_user = User.query.filter_by(firebase_uid=firebase_uid).first()
+
+    if current_user:
+        user_entry = {
+            "username": current_user.username,
+            "points": int(current_user.points or 0),
+            "profilePicture": current_user.profilePicture
+        }
+
+        # kalau user login tidak ada di top 15, tambahkan
+        if not any(u["username"] == current_user.username for u in leaderboard):
+            leaderboard.append(user_entry)
 
     return jsonify({'leaderboard': leaderboard}), 200
 
@@ -249,6 +267,7 @@ def submit_checklist():
         }
     }), 201
 
+
 # ============================
 # ROUTE: Today Goals Completion
 # ============================
@@ -280,7 +299,8 @@ def check_goals_achieved():
             return actual_val == goal_val
         return False
 
-    results = {}
+    goals_achieved = {}       # hanya boolean goals
+    numeric_results = {}      # untuk numeric goals (dengan nilai bool tercapai/tidak)
     points_to_add = 0
 
     # numeric goals
@@ -293,7 +313,7 @@ def check_goals_achieved():
         goal_val = getattr(yesterday_goals, goal_attr)
         actual_val = getattr(today_log, log_attr)
         achieved = check_goal_achieved(goal_val, actual_val, 'numeric')
-        results[log_attr] = achieved
+        numeric_results[goal_attr] = achieved  # masukkan hasil ke numeric_results
         if achieved:
             points_to_add += 5
 
@@ -313,7 +333,7 @@ def check_goals_achieved():
         goal_val = getattr(yesterday_goals, goal_attr)
         actual_val = getattr(today_log, log_attr)
         achieved = check_goal_achieved(goal_val, actual_val, 'boolean')
-        results[log_attr] = achieved
+        goals_achieved[log_attr] = achieved
         if achieved:
             points_to_add += 5
 
@@ -330,16 +350,24 @@ def check_goals_achieved():
 
     return jsonify({
         'date': str(today),
-        'goals_achieved': results,
-        'numeric_goals': {
-            'carTravelKmGoal': yesterday_goals.carTravelKmGoal,
-            'showerTimeMinutesGoal': yesterday_goals.showerTimeMinutesGoal,
-            'electronicTimeHoursGoal': yesterday_goals.electronicTimeHoursGoal
+        'goals_achieved': goals_achieved,   # hanya boolean
+        'numeric_goals': {                  # numeric tetap ada nilainya dan status tercapai
+            'carTravelKmGoal': {
+                'target': yesterday_goals.carTravelKmGoal,
+                'achieved': numeric_results['carTravelKmGoal']
+            },
+            'showerTimeMinutesGoal': {
+                'target': yesterday_goals.showerTimeMinutesGoal,
+                'achieved': numeric_results['showerTimeMinutesGoal']
+            },
+            'electronicTimeHoursGoal': {
+                'target': yesterday_goals.electronicTimeHoursGoal,
+                'achieved': numeric_results['electronicTimeHoursGoal']
+            },
         },
         'points_earned': points_earned_today,
         'total_points': user.points
     }), 200
-
 
 
 # ============================
@@ -508,6 +536,7 @@ def get_all_daily_carbon_logs():
             "message": "Failed to retrieve logs",
             "error": str(e)
         }), 500
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

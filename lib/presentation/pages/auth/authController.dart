@@ -125,6 +125,7 @@ class AuthController extends GetxController {
       Get.find<DailyGoalsController>().clear();
       Get.find<DailyCarbonLogController>().clear();
       Get.find<GoalsAchievedController>().clear();
+      Get.find<ChecklistController>().clear();
 
       isSync.value = false;
     } catch (e) {

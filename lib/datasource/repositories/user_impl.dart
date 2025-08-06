@@ -1,6 +1,6 @@
 import 'package:ecomagara/datasource/models/leaderboardUserModel.dart';
 import 'package:ecomagara/datasource/models/userModel.dart';
-import 'package:ecomagara/datasource/remote/user_remote.dart';
+import 'package:ecomagara/datasource/remote/user_datasource.dart';
 import 'package:ecomagara/domain/repositories/user_repostitory.dart';
 
 

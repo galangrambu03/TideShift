@@ -28,7 +28,12 @@ class GoalsAchievedController extends GetxController {
       print('=== GOALS ACHIEVED ===');
       print('Date: ${data.date}');
       data.goalsAchieved.forEach((key, value) {
-        print('$key: $value');
+        print('Boolean Goal: $key = $value');
+      });
+      data.numericGoals.forEach((key, value) {
+        print(
+          'Numeric Goal: $key target=${value.target}, achieved=${value.achieved}',
+        );
       });
       print('Points earned today: ${data.pointsEarned}');
       print('Total points: ${data.totalPoints}');
@@ -46,4 +51,3 @@ class GoalsAchievedController extends GetxController {
     errorMessage.value = '';
   }
 }
-

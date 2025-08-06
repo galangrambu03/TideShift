@@ -1,5 +1,5 @@
 import 'package:ecomagara/config/config.dart';
-import 'package:ecomagara/datasource/remote/profileDatasource.dart';
+import 'package:ecomagara/datasource/remote/profile_datasource.dart';
 import 'package:ecomagara/datasource/repositories/profile_impl.dart';
 import 'package:ecomagara/main.dart';
 import 'package:ecomagara/presentation/pages/auth/authController.dart';
@@ -8,6 +8,7 @@ import 'package:ecomagara/user_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ecomagara/config/colors.dart';
+import 'package:intl/intl.dart';
 import 'profile_controller.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -22,6 +23,12 @@ class ProfilePage extends StatelessWidget {
     );
     final UserController userController = Get.find();
     final AuthController authController = Get.find();
+
+    // misal joinDate adalah DateTime
+    final joinDate = userController.userData.value!.joinDate;
+
+    // format tanggal: "dd MMMM" (contoh: 06 August)
+    final formattedDate = DateFormat('MMMM yyyy').format(joinDate);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -138,6 +145,7 @@ class ProfilePage extends StatelessWidget {
                   userController.userData.value?.username?.isNotEmpty ?? false
                       ? userController.userData.value!.username
                       : 'username';
+              // eco warrior text
 
               return Text(
                 username,
@@ -150,9 +158,8 @@ class ProfilePage extends StatelessWidget {
             }),
             const SizedBox(height: 5),
 
-            // eco warrior text
             Text(
-              'Eco Warrior since ${userController.userData.value!.joinDate}',
+              'Eco Warrior since $formattedDate',
               style: TextStyle(fontSize: 14, color: Colors.black54),
             ),
             const SizedBox(height: 20),

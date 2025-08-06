@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:ecomagara/config/config.dart';
-import 'package:ecomagara/datasource/models/userModel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 
