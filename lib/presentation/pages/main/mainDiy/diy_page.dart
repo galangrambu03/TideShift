@@ -76,8 +76,7 @@ class DiyPage extends StatelessWidget {
                       title: item.title,
                       description:
                           item
-                              .steps
-                              .first, 
+                              .description, 
                       buttonText: 'Craft Item',
                       onPressed: () {
                         Get.to(DiyDetailPage(diy: item));

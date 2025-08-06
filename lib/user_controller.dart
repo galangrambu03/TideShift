@@ -19,7 +19,7 @@ class UserController extends GetxController {
       fetchUserProfile();
     }
   }
-
+  
   /// Fetch user profile from backend (/me)
   Future<void> fetchUserProfile() async {
     try {

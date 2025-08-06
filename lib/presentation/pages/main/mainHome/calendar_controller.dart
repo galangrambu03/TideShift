@@ -1,4 +1,5 @@
 import 'package:ecomagara/datasource/models/DailyCarbonLogModel.dart';
+import 'package:ecomagara/datasource/models/userModel.dart';
 import 'package:ecomagara/domain/repositories/dailyCarbonLog_repository.dart';
 import 'package:ecomagara/user_controller.dart';
 import 'package:get/get.dart';
@@ -12,18 +13,29 @@ class CalendarController extends GetxController {
 
   final DailyCarbonLogRepository repository;
 
-  CalendarController({required this.repository});
+  // gunakan RxInt untuk island theme biar gampang diupdate
+  var islandTheme = 0.obs;
 
-  var islandTheme =
-      Get.find<UserController>().userData.value?.currentIslandTheme.obs;
+  CalendarController({required this.repository});
 
   @override
   void onInit() async {
     super.onInit();
     print("📅 CalendarController initialized");
-    print(
-      "Theme calendar: ${Get.find<UserController>().userData.value?.currentIslandTheme}",
-    );
+
+    // inisialisasi islandTheme dari user controller
+    final userController = Get.find<UserController>();
+    islandTheme.value = userController.userData.value?.currentIslandTheme ?? 0;
+
+    // listen perubahan userData untuk update islandTheme
+    ever<UserModel?>(userController.userData, (user) {
+      final newTheme = user?.currentIslandTheme ?? 0;
+      islandTheme.value = newTheme;
+      print("🌴 islandTheme updated to $newTheme");
+    });
+
+    print("Theme calendar awal: ${islandTheme.value}");
+
     await fetchRecentLogs();
   }
 
@@ -73,7 +85,7 @@ class CalendarController extends GetxController {
   String? getAsset(int? level) {
     print("🎨 Getting asset for level: $level");
     if (level == null || level <= 0 || level > 5) return null;
-    return 'assets/images/islandsImages/island$islandTheme${level - 1}.png';
+    return 'assets/images/islandsImages/island${islandTheme.value}${level - 1}.png';
   }
 
   List<DateTime?> generateDaysForMonth(DateTime month) {
@@ -117,6 +129,6 @@ class CalendarController extends GetxController {
     logs.clear();
     currentPageIndex.value = 0;
     pageController.jumpToPage(0);
-    islandTheme = null;
+    islandTheme.value = 0;
   }
 }

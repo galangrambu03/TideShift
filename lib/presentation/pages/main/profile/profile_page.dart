@@ -16,11 +16,7 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ProfileController controller = Get.put(
-      ProfileController(
-        repository: ProfileRepositoryImpl(datasource: ProfileDatasource()),
-      ),
-    );
+    final ProfileController controller = Get.find();
     final UserController userController = Get.find();
     final AuthController authController = Get.find();
 

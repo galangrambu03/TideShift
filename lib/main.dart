@@ -7,6 +7,7 @@ import 'package:ecomagara/datasource/remote/checkGoalsAchieved_datasource.dart';
 import 'package:ecomagara/datasource/remote/dailyCarbonLog_datasource.dart';
 import 'package:ecomagara/datasource/remote/dailyGoalsLog_datasource.dart';
 import 'package:ecomagara/datasource/remote/leaderboard_datasource.dart';
+import 'package:ecomagara/datasource/remote/profile_datasource.dart';
 import 'package:ecomagara/datasource/remote/user_datasource.dart';
 import 'package:ecomagara/datasource/repositories/achievedGoals_impl.dart';
 import 'package:ecomagara/datasource/repositories/carbonLog_impl.dart';
@@ -16,6 +17,7 @@ import 'package:ecomagara/datasource/repositories/diy_impl.dart';
 import 'package:ecomagara/datasource/repositories/fact_impl.dart';
 import 'package:ecomagara/datasource/repositories/goalsLog_impl.dart';
 import 'package:ecomagara/datasource/repositories/leaderboard_impl.dart';
+import 'package:ecomagara/datasource/repositories/profile_impl.dart';
 import 'package:ecomagara/datasource/repositories/user_impl.dart';
 import 'package:ecomagara/datasource/services/firebaseAuthServices.dart';
 import 'package:ecomagara/domain/repositories/dailyCarbonLog_repository.dart';
@@ -40,6 +42,7 @@ import 'package:ecomagara/presentation/pages/main/mainHome/carbonLog_controller.
 import 'package:ecomagara/presentation/pages/main/mainHome/homepage.dart';
 import 'package:ecomagara/presentation/pages/main/mainleaderboard/leaderboard_controller.dart';
 import 'package:ecomagara/presentation/pages/main/mainleaderboard/leaderboard_page.dart';
+import 'package:ecomagara/presentation/pages/main/profile/profile_controller.dart';
 import 'package:ecomagara/presentation/pages/main/splashscreen/splashcreen_controller.dart';
 import 'package:ecomagara/presentation/pages/main/splashscreen/splashscreen.dart';
 import 'package:ecomagara/user_controller.dart';
@@ -83,6 +86,11 @@ Future<void> main() async {
   Get.put<DailyCarbonLogController>(
     DailyCarbonLogController(repository: Get.find<DailyCarbonLogRepository>()),
     permanent: true,
+  );
+  Get.lazyPut(()=>
+    ProfileController(
+      repository: ProfileRepositoryImpl(datasource: ProfileDatasource()),
+    ), fenix: true
   );
 
   Get.lazyPut(() => UserController(), fenix: true);

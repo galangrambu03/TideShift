@@ -5,6 +5,7 @@ class DiyModel {
   final List<String> steps;
   final String image; // array of strings
   final String youtube;
+  final String description;
 
   DiyModel({
     required this.id,
@@ -13,6 +14,7 @@ class DiyModel {
     required this.steps,
     required this.image,
     required this.youtube,
+    required this.description,
   });
 
   factory DiyModel.fromJson(Map<String, dynamic> json) {
@@ -23,6 +25,7 @@ class DiyModel {
       steps: List<String>.from(json['steps']),
       image: json['image'],
       youtube: json['youtube'],
+      description: json['description']
     );
   }
 }

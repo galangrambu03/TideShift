@@ -103,6 +103,30 @@ def update_profile_picture():
 
     return jsonify({'message': 'Profile picture updated'}), 200
 
+# ============================
+# ROUTE: Update Current Island Theme
+# ============================
+@app.route('/me/current-island-theme', methods=['PATCH'])
+@firebase_required
+def update_current_island_theme():
+    data = request.get_json() or {}
+    if 'currentIslandTheme' not in data:
+        return jsonify({'message': 'No currentIslandTheme provided'}), 400
+    
+    new_theme = data['currentIslandTheme']
+
+    user = User.query.filter_by(firebase_uid=request.user_uid).first()
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
+
+    user.currentIslandTheme = new_theme
+    db.session.commit()
+
+    return jsonify({
+        'message': 'Current island theme updated successfully',
+        'currentIslandTheme': user.currentIslandTheme
+    }), 200
+
 
 # ============================
 # ROUTE: Leaderboard

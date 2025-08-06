@@ -108,8 +108,8 @@ class _DiyDetailPageState extends State<DiyDetailPage>
                               ),
                             ),
                             const SizedBox(height: 8),
-                            const Text(
-                              'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eu turpis molestie, dictum est a, mattis tellus.',
+                            Text(
+                              widget.diy.description,
                               style: TextStyle(
                                 fontSize: 14,
                                 color: AppColors.surface,

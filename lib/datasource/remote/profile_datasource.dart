@@ -4,9 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 
 class ProfileDatasource {
-
   final String baseUrl = AppConfig.localUrl;
-
 
   Future<void> updateProfilePicture(String newImageUrl) async {
     final user = FirebaseAuth.instance.currentUser;
@@ -28,6 +26,28 @@ class ProfileDatasource {
 
     if (response.statusCode != 200) {
       throw Exception('Failed to update profile picture: ${response.body}');
+    }
+  }
+
+  Future<void> updateCurrentIslandTheme(int newTheme) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      throw Exception("User not logged in");
+    }
+
+    final authToken = await user.getIdToken();
+    final url = Uri.parse('$baseUrl/me/current-island-theme');
+
+    final response = await http.patch(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $authToken',
+      },
+      body: jsonEncode({'currentIslandTheme': newTheme}),
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Failed to update island theme: ${response.body}');
     }
   }
 

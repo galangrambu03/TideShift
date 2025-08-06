@@ -10,7 +10,12 @@ class ProfileRepositoryImpl implements ProfileRepository {
   Future<void> updateProfilePicture(String newImageUrl) {
     return datasource.updateProfilePicture(newImageUrl);
   }
-  
+
+  @override
+  Future<void> updateCurrentIslandTheme(int newIslandThemeId) {
+    return datasource.updateCurrentIslandTheme(newIslandThemeId);
+  }
+
   // @override
   // Future<UserModel> fetchUser() {
   //   return datasource.fetchUser();
