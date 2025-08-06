@@ -1,5 +1,6 @@
 import 'package:ecomagara/datasource/models/DailyCarbonLogModel.dart';
 import 'package:ecomagara/domain/repositories/dailyCarbonLog_repository.dart';
+import 'package:ecomagara/user_controller.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
@@ -13,10 +14,16 @@ class CalendarController extends GetxController {
 
   CalendarController({required this.repository});
 
+  var islandTheme =
+      Get.find<UserController>().userData.value?.currentIslandTheme.obs;
+
   @override
   void onInit() async {
     super.onInit();
     print("📅 CalendarController initialized");
+    print(
+      "Theme calendar: ${Get.find<UserController>().userData.value?.currentIslandTheme}",
+    );
     await fetchRecentLogs();
   }
 
@@ -66,7 +73,7 @@ class CalendarController extends GetxController {
   String? getAsset(int? level) {
     print("🎨 Getting asset for level: $level");
     if (level == null || level <= 0 || level > 5) return null;
-    return 'assets/images/islandsImages/island${level - 1}.png';
+    return 'assets/images/islandsImages/island$islandTheme${level - 1}.png';
   }
 
   List<DateTime?> generateDaysForMonth(DateTime month) {
@@ -110,5 +117,6 @@ class CalendarController extends GetxController {
     logs.clear();
     currentPageIndex.value = 0;
     pageController.jumpToPage(0);
+    islandTheme = null;
   }
 }

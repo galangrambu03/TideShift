@@ -35,6 +35,7 @@ class _HomepageState extends State<Homepage> {
   void initState() {
     super.initState();
     dailyGoalsController.fetchGoals();  // panggil di sini
+    print("Theme: ${Get.find<UserController>().userData.value?.currentIslandTheme}");
   }
 
   @override
@@ -321,7 +322,7 @@ class _HomepageState extends State<Homepage> {
           const SizedBox(width: 12),
           Expanded(
             child: Image.asset(
-              'assets/images/islandsImages/island${carbonLogController.todayLog.value!.islandPath}.png',
+              'assets/images/islandsImages/island${userController.userData.value!.currentIslandTheme}${carbonLogController.todayLog.value!.islandPath}.png',
               scale: 2,
             ),
           ),

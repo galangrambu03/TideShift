@@ -322,7 +322,7 @@ class _ChecklistPageState extends State<ChecklistPage> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Image.asset(
-                      'assets/images/islandsImages/island${log.islandPath}.png',
+                      'assets/images/islandsImages/island${userController.userData.value!.currentIslandTheme}${log.islandPath}.png',
                     ),
                   ),
                   const SizedBox(height: 16),

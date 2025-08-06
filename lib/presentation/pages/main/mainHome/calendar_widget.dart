@@ -3,6 +3,7 @@ import 'package:ecomagara/datasource/models/DailyCarbonLogModel.dart';
 import 'package:ecomagara/presentation/pages/main/mainChecklist/carbonUnit_controller.dart';
 import 'package:ecomagara/presentation/pages/main/mainHome/carbonLog_controller.dart';
 import 'package:ecomagara/presentation/widgets/donutChart.dart';
+import 'package:ecomagara/user_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -276,7 +277,7 @@ class _KalenderBergambarState extends State<KalenderBergambar> {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Image.asset(
-                                'assets/images/islandsImages/island${log.islandPath}.png',
+                                'assets/images/islandsImages/island${controller.islandTheme}${log.islandPath}.png',
                                 fit: BoxFit.contain,
                               ),
                             ),
