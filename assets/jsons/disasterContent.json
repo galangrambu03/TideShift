@@ -134,5 +134,23 @@
       "Practice storm drills with your family and teach children what to do if a warning is issued.",
       "Document damages immediately after the storm and contact your insurance provider."
     ]
-  }
+  },
+  {
+  "id": "9",
+  "disasterNames": "Island Submergence",
+  "description": "Island submergence is the gradual or sudden sinking of low-lying islands due to rising sea levels, coastal erosion, and land subsidence. It endangers the habitat, livelihoods, and cultures of island communities.",
+  "countries": ["Kiribati", "Tuvalu", "Maldives", "Marshall Islands", "Indonesia"],
+  "image": "assets/images/disasterImages/rfi_9.jpg",
+  "tips": [
+    "Advocate for global climate action to reduce greenhouse gas emissions driving sea level rise.",
+    "Strengthen coastal defenses with sea walls, breakwaters, and natural buffers like mangroves and coral reefs.",
+    "Elevate homes on stilts or floating foundations where feasible.",
+    "Avoid construction near shorelines or areas with visible coastal erosion.",
+    "Promote and participate in island community relocation planning and international climate adaptation programs.",
+    "Implement sustainable tourism and fishing practices to preserve natural coastal resilience.",
+    "Educate community members about evacuation procedures and long-term adaptation options.",
+    "Support research and monitoring of local land elevation and sea level trends."
+  ]
+}
+
 ]
