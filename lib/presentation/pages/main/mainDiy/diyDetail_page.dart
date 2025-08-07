@@ -4,49 +4,37 @@ import 'package:video_player/video_player.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:ecomagara/config/colors.dart';
 
+import 'package:webview_flutter/webview_flutter.dart';
+
 class DiyDetailPage extends StatefulWidget {
   final DiyModel diy;
 
-  const DiyDetailPage({super.key, required this.diy});
+  const DiyDetailPage({super.key, required this.diy}); 
 
   @override
   State<DiyDetailPage> createState() => _DiyDetailPageState();
 }
 
+// 3. Hapus semua kode YouTube player dan ganti dengan ini:
 class _DiyDetailPageState extends State<DiyDetailPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  VideoPlayerController? _videoController;
-  YoutubePlayerController? _youtubeController;
-
+  late final WebViewController webController;
+  
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-
-    if (widget.diy.youtube.isNotEmpty) {
-      final videoId = YoutubePlayer.convertUrlToId(widget.diy.youtube);
-      if (videoId != null) {
-        _youtubeController = YoutubePlayerController(
-          initialVideoId: videoId,
-          flags: const YoutubePlayerFlags(autoPlay: false, mute: false),
-        );
-      } else {
-        _videoController = VideoPlayerController.networkUrl(
-            Uri.parse(widget.diy.youtube),
-          )
-          ..initialize().then((_) {
-            setState(() {});
-          });
-      }
-    }
+    
+    // Setup WebView controller
+    webController = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(const Color(0x00000000));
   }
 
   @override
   void dispose() {
     _tabController.dispose();
-    _videoController?.dispose();
-    _youtubeController?.dispose();
     super.dispose();
   }
 
@@ -72,7 +60,7 @@ class _DiyDetailPageState extends State<DiyDetailPage>
       backgroundColor: AppColors.background,
       body: Column(
         children: [
-          // Custom app bar with image background
+          // Header with image (sama seperti sebelumnya)
           Container(
             height: 200,
             width: double.infinity,
@@ -84,16 +72,11 @@ class _DiyDetailPageState extends State<DiyDetailPage>
             ),
             child: Stack(
               children: [
-                // Gradient overlay
-                Container(
-                  color: Colors.black.withOpacity(0.5),
-                ),
-                // App bar content
+                Container(color: Colors.black.withOpacity(0.5)),
                 SafeArea(
                   child: Column(
                     children: [
                       const Spacer(),
-                      // Title and description at bottom
                       Padding(
                         padding: const EdgeInsets.all(20.0),
                         child: Column(
@@ -132,7 +115,7 @@ class _DiyDetailPageState extends State<DiyDetailPage>
             child: TabBar(
               controller: _tabController,
               indicator: BoxDecoration(
-                color: const Color(0xFFFF6B35), // Orange color from the design
+                color: const Color(0xFFFF6B35),
                 borderRadius: BorderRadius.zero,
               ),
               indicatorSize: TabBarIndicatorSize.tab,
@@ -141,10 +124,7 @@ class _DiyDetailPageState extends State<DiyDetailPage>
               unselectedLabelColor: Colors.black,
               labelStyle: const TextStyle(fontWeight: FontWeight.w600),
               unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
-              tabs: const [
-                Tab(text: 'Text'),
-                Tab(text: 'Video'),
-              ],
+              tabs: const [Tab(text: 'Text'), Tab(text: 'Video')],
             ),
           ),
 
@@ -161,6 +141,7 @@ class _DiyDetailPageState extends State<DiyDetailPage>
   }
 
   Widget _buildTextContent() {
+    // Sama seperti sebelumnya
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -177,18 +158,13 @@ class _DiyDetailPageState extends State<DiyDetailPage>
             ),
           ),
           const SizedBox(height: 20),
-
-          // Materials list
           ...widget.diy.materials.map(
             (m) => Padding(
               padding: const EdgeInsets.only(bottom: 4, left: 20),
               child: Text('• $m'),
             ),
           ),
-
           const SizedBox(height: 30),
-
-          // Steps
           ...widget.diy.steps.asMap().entries.map(
             (entry) => Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -207,9 +183,9 @@ class _DiyDetailPageState extends State<DiyDetailPage>
                 const SizedBox(height: 12),
                 Container(
                   width: double.infinity,
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
                   decoration: BoxDecoration(
-                    color: AppColors.primaryVariant, // Green color from design
+                    color: AppColors.primaryVariant,
                   ),
                   child: Text(
                     entry.value,
@@ -234,22 +210,24 @@ class _DiyDetailPageState extends State<DiyDetailPage>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Video dengan WebView - SOLUSI PALING SIMPEL
           if (widget.diy.youtube.isEmpty)
             const Center(child: Text('No video available'))
-          else if (_youtubeController != null)
-            YoutubePlayer(
-              controller: _youtubeController!,
-              showVideoProgressIndicator: true,
-              progressIndicatorColor: AppColors.primary,
-            )
-          else if (_videoController == null ||
-              !_videoController!.value.isInitialized)
-            const Center(child: CircularProgressIndicator())
           else
-            AspectRatio(
-              aspectRatio: _videoController!.value.aspectRatio,
-              child: VideoPlayer(_videoController!),
+            Container(
+              height: 220,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: WebViewWidget(
+                  controller: webController
+                    ..loadRequest(Uri.parse(widget.diy.youtube)),
+                ),
+              ),
             ),
+          
           const SizedBox(height: 30),
           Center(
             child: Text(

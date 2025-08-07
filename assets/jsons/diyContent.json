@@ -22,31 +22,29 @@
     "youtube": "https://youtu.be/piP_ozqkYQo"
   },
   {
-    "id": 2,
-    "title": "Denim Bag from Old Jeans",
-    "materials": [
-      "Old jeans",
-      "Scissors",
-      "Needle and thread or sewing machine",
-      "Ruler or measuring tape",
-      "Fabric marker",
-      "Optional: buttons, zipper, or straps"
-    ],
-    "description": "Give your jeans a second life! This tutorial shows how to turn old denim into a stylish tote bag with optional zippers and pockets.",
-    "image":"assets/images/diyImages/diy_2.png"
-    ,
-    "steps": [
-      "Cut one leg of the jeans according to the height you want for the bag.",
-      "Turn the fabric inside out.",
-      "Sew straight across the bottom to close it.",
-      "Flatten the bottom corners into triangles and sew across to form the bag base.",
-      "Cut two long strips from leftover fabric for the straps.",
-      "Sew the straps onto the top of the bag.",
-      "Flip the bag right side out.",
-      "Decorate with pockets, buttons, or other embellishments."
-    ],
-    "youtube": "https://youtu.be/sYLdNrjGT1U?si=UXGp4wZqwkyw3azx"
-  },
+  "id": 2,
+  "title": "Solar Bottle Lamp: Natural Light from Water & Bleach",
+  "materials": [
+    "Clear plastic bottle (1–2 liters)",
+    "Clean water",
+    "Bleach",
+    "Waterproof sealant",
+    "Thin metal sheet (optional, for roof mounting)"
+  ],
+  "image": "assets/images/diyImages/diy_2.png",
+  "steps": [
+    "Choose a clean, transparent plastic bottle.",
+    "Fill the bottle almost to the top with clean water.",
+    "Add a small amount of bleach to prevent algae growth.",
+    "Cut a hole in the roof (e.g., tin or metal roofing) to fit the bottle.",
+    "Insert the bottle into the hole, allowing the bottom part to hang into the room.",
+    "Use a metal sheet to lock the bottle in place on the roof if needed.",
+    "Apply waterproof sealant around the hole and bottle to prevent leaks.",
+    "During the daytime, sunlight will refract through the water-filled bottle, lighting up the room like a 40–60 watt bulb."
+  ],
+  "description": "Create an eco-friendly solar lamp using a plastic bottle, water, and a bit of bleach. This simple solution brings natural daylight into dark indoor spaces, especially useful in areas with limited electricity.",
+  "youtube": "https://youtu.be/KhY_KPApThM"
+},
   {
     "id": 3,
     "title": "Produce Bag from Sheer Fabric",
@@ -192,6 +190,32 @@
       "The yarn-covered bottle is now a decorative organizer."
     ],
     "description": "Wrap an old bottle with colorful yarn to create a beautiful, decorative organizer. Simple, stylish, and sustainable.",
-    "youtube": "hhttps://youtu.be/ATeHydXrfDw?si=ZKlYLER4NrTmL_ih"
+    "youtube": "https://youtu.be/ATeHydXrfDw?si=ZKlYLER4NrTmL_ih"
+  },
+  {
+    "id": 9,
+    "title": "Denim Bag from Old Jeans",
+    "materials": [
+      "Old jeans",
+      "Scissors",
+      "Needle and thread or sewing machine",
+      "Ruler or measuring tape",
+      "Fabric marker",
+      "Optional: buttons, zipper, or straps"
+    ],
+    "description": "Give your jeans a second life! This tutorial shows how to turn old denim into a stylish tote bag with optional zippers and pockets.",
+    "image":"assets/images/diyImages/diy_9.png"
+    ,
+    "steps": [
+      "Cut one leg of the jeans according to the height you want for the bag.",
+      "Turn the fabric inside out.",
+      "Sew straight across the bottom to close it.",
+      "Flatten the bottom corners into triangles and sew across to form the bag base.",
+      "Cut two long strips from leftover fabric for the straps.",
+      "Sew the straps onto the top of the bag.",
+      "Flip the bag right side out.",
+      "Decorate with pockets, buttons, or other embellishments."
+    ],
+    "youtube": "https://youtu.be/sYLdNrjGT1U?si=UXGp4wZqwkyw3azx"
   }
 ]
