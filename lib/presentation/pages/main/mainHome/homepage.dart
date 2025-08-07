@@ -14,7 +14,6 @@ import 'package:get/get.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class Homepage extends StatefulWidget {
-
   Homepage({super.key});
 
   @override
@@ -34,8 +33,10 @@ class _HomepageState extends State<Homepage> {
   @override
   void initState() {
     super.initState();
-    dailyGoalsController.fetchGoals();  // panggil di sini
-    print("Theme: ${Get.find<UserController>().userData.value?.currentIslandTheme}");
+    dailyGoalsController.fetchGoals(); // panggil di sini
+    print(
+      "Theme: ${Get.find<UserController>().userData.value?.currentIslandTheme}",
+    );
   }
 
   @override
@@ -53,35 +54,54 @@ class _HomepageState extends State<Homepage> {
                   // Header
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Hello',
-                            style: TextStyle(fontSize: 20, color: Colors.black),
-                          ),
-                          Obx(
-                            () => Text(
-                              userController.userData.value?.username ??
-                                  'Loading...',
+                      // KIRI: Greeting + Username
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Hello',
                               style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.primary,
+                                fontSize: 20,
+                                color: Colors.black,
                               ),
                             ),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            "Let's save our planet, every change matter!",
-                            style: TextStyle(fontSize: 12, color: Colors.grey),
-                          ),
-                        ],
+                            Obx(
+                              () => Text(
+                                userController.userData.value?.username ??
+                                    'Loading...',
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.primary,
+                                ),
+                                overflow:
+                                    TextOverflow.ellipsis, // Biar gak overflow
+                                maxLines: 1,
+                              ),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              "Let's save our planet, every change matter!",
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ],
+                        ),
                       ),
+
+                      // KANAN: Point + Avatar
                       Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           GestureDetector(
+                            onTap: () => Get.to(ShopPage()),
                             child: Row(
                               children: [
                                 const Icon(Icons.star, color: Colors.amber),
@@ -98,28 +118,24 @@ class _HomepageState extends State<Homepage> {
                                 ),
                               ],
                             ),
-                            onTap: () {
-                              Get.to(ShopPage());
-                            },
                           ),
                           const SizedBox(width: 12),
                           Obx(
                             () => GestureDetector(
+                              onTap: () => Get.to(ProfilePage()),
                               child: CircleAvatar(
                                 backgroundColor: Colors.black,
                                 backgroundImage: AssetImage(
                                   'assets/images/profilePictures/${userController.userData.value!.profilePicture}',
                                 ),
                               ),
-                              onTap: () {
-                                Get.to(ProfilePage());
-                              },
                             ),
                           ),
                         ],
                       ),
                     ],
                   ),
+
                   const SizedBox(height: 24),
 
                   // Recap Carbon Container
@@ -170,10 +186,12 @@ class _HomepageState extends State<Homepage> {
               if (dailyGoalsController.isLoading.value) {
                 return SizedBox(
                   height: 70,
-                  child: Center(child: LoadingAnimationWidget.progressiveDots(
+                  child: Center(
+                    child: LoadingAnimationWidget.progressiveDots(
                       color: AppColors.primary,
                       size: 30,
-                    ),),
+                    ),
+                  ),
                 );
               }
 
@@ -185,7 +203,10 @@ class _HomepageState extends State<Homepage> {
                     child: Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        gradient: logDate == null? AppColors.secondaryGradient: AppColors.primaryGradient,
+                        gradient:
+                            logDate == null
+                                ? AppColors.secondaryGradient
+                                : AppColors.primaryGradient,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Center(
@@ -193,7 +214,10 @@ class _HomepageState extends State<Homepage> {
                           logDate == null
                               ? "Submit your first recap to receive daily goals!"
                               : "No new next goals today, you're doing great!",
-                          style: TextStyle(color: AppColors.surface, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            color: AppColors.surface,
+                            fontWeight: FontWeight.bold,
+                          ),
                           softWrap: true,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -215,7 +239,7 @@ class _HomepageState extends State<Homepage> {
                     if (goal.value == 0.0) {
                       return const SizedBox.shrink();
                     }
-                    
+
                     return GoalCard(
                       text:
                           goal.unit != null
