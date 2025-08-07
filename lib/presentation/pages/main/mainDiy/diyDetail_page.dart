@@ -93,9 +93,11 @@ class _DiyDetailPageState extends State<DiyDetailPage>
                             const SizedBox(height: 8),
                             Text(
                               widget.diy.description,
+                              maxLines: 3,
                               style: TextStyle(
                                 fontSize: 14,
                                 color: AppColors.surface,
+                                overflow: TextOverflow.ellipsis
                               ),
                             ),
                           ],
