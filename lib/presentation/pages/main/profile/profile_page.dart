@@ -1,6 +1,4 @@
 import 'package:ecomagara/config/config.dart';
-import 'package:ecomagara/datasource/remote/profile_datasource.dart';
-import 'package:ecomagara/datasource/repositories/profile_impl.dart';
 import 'package:ecomagara/main.dart';
 import 'package:ecomagara/presentation/pages/auth/authController.dart';
 import 'package:ecomagara/presentation/widgets/defaultButton.dart';
@@ -54,6 +52,7 @@ class ProfilePage extends StatelessWidget {
             Stack(
               alignment: Alignment.bottomRight,
               children: [
+                // Avatar
                 Obx(() {
                   final userData = userController.userData.value;
                   final profilePic =
@@ -69,64 +68,73 @@ class ProfilePage extends StatelessWidget {
                     ),
                   );
                 }),
-                IconButton.filled(
-                  icon: Icon(Icons.edit),
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(
-                          content: SizedBox(
-                            height: 170,
-                            child: GridView.builder(
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 3,
-                                    crossAxisSpacing: 10,
-                                    mainAxisSpacing: 10,
-                                  ),
-                              itemCount: 6,
-                              itemBuilder: (context, index) {
-                                return GestureDetector(
-                                  onTap: () async {
-                                    await controller.updateProfilePicture(
-                                      'prof${index + 1}.png',
-                                    );
-                                    Get.back();
-                                  },
-                                  child: Obx(() {
-                                    final currentPic =
-                                        userController
-                                            .userData
-                                            .value
-                                            ?.profilePicture ??
-                                        '';
-                                    final selected =
-                                        currentPic == 'prof${index + 1}.png';
 
-                                    return CircleAvatar(
-                                      radius: 50,
-                                      backgroundColor:
-                                          selected ? Colors.green : null,
-                                      backgroundImage: AssetImage(
-                                        'assets/images/profilePictures/prof${index + 1}.png',
-                                      ),
-                                    );
-                                  }),
-                                );
-                              },
+                // Fix: Use Align or Positioned
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: IconButton.filled(
+                    icon: Icon(Icons.edit),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            content: SizedBox(
+                              height: 300,
+                              width: double.maxFinite,
+                              child: GridView.builder(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 3,
+                                      crossAxisSpacing: 10,
+                                      mainAxisSpacing: 10,
+                                    ),
+                                itemCount: 6,
+                                itemBuilder: (context, index) {
+                                  return GestureDetector(
+                                    onTap: () async {
+                                      await controller.updateProfilePicture(
+                                        'prof${index + 1}.png',
+                                      );
+                                      Get.back();
+                                    },
+                                    child: Obx(() {
+                                      final currentPic =
+                                          userController
+                                              .userData
+                                              .value
+                                              ?.profilePicture ??
+                                          '';
+                                      final selected =
+                                          currentPic == 'prof${index + 1}.png';
+
+                                      return CircleAvatar(
+                                        radius: 50,
+                                        backgroundColor:
+                                            selected ? Colors.green : null,
+                                        backgroundImage: AssetImage(
+                                          'assets/images/profilePictures/prof${index + 1}.png',
+                                        ),
+                                      );
+                                    }),
+                                  );
+                                },
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(
-                      AppColors.button2,
-                    ),
-                    foregroundColor: MaterialStateProperty.all<Color>(
-                      AppColors.surface,
+                          );
+                        },
+                      );
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                        AppColors.button2,
+                      ),
+                      foregroundColor: MaterialStateProperty.all<Color>(
+                        AppColors.surface,
+                      ),
                     ),
                   ),
                 ),

@@ -74,9 +74,7 @@ class OfflineDiyPage extends StatelessWidget {
                           item.image, 
                       title: item.title,
                       description:
-                          item
-                              .steps
-                              .first, 
+                          item.description,
                       buttonText: 'Craft Item',
                       onPressed: () {
                         Get.to(OfflineDiyDetailPage(diy: item));
