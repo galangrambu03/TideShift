@@ -64,9 +64,11 @@ class OfflineDiyDetailPage extends StatelessWidget {
                             const SizedBox(height: 8),
                             Text(
                               diy.description,
+                              maxLines: 3,
                               style: TextStyle(
                                 fontSize: 14,
                                 color: AppColors.surface,
+                                overflow: TextOverflow.ellipsis
                               ),
                             ),
                           ],

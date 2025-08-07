@@ -99,7 +99,7 @@ class OfflineHomepage extends StatelessWidget {
               // DIY for Earth Card
               OfflineFeatureCard(
                 imagePath: 'assets/images/decorationImages/diyHeader.png',
-                title: 'DIY for Earth',
+                title: 'DIY for Island',
                 onPressed: () {
                   Get.to(OfflineDiyPage());
                 },
