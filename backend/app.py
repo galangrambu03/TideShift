@@ -1,7 +1,7 @@
 from flask import Flask, g, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func, desc
-from firebase_config import *
+from backend.firebase_config import *
 from auth_decorator import firebase_required
 from datetime import date, timedelta
 from models import DailyGoalsLog, db, User, DailyCarbonLog
